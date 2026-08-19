@@ -20,7 +20,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Open Sans', sans-serif; background-color: var(--dif-light); color: var(--text-color); line-height: 1.5; }
 
-        /* Pantalla de Acceso con Contraseña */
+        /* Pantalla de Acceso */
         #loginScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(43, 58, 74, 0.95); display: flex; justify-content: center; align-items: center; z-index: 9999;
@@ -35,47 +35,52 @@
             width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
             font-size: 16px; text-align: center; margin-bottom: 15px; outline: none; text-transform: uppercase;
         }
-        .login-card input:focus { border-color: var(--dif-orange); }
         .login-error { color: #dc2626; font-size: 13px; margin-bottom: 15px; display: none; }
 
-        /* Estilos Generales del Sistema */
+        /* Encabezado Principal */
         .main-header {
             background-color: #ffffff; border-bottom: 3px solid var(--dif-orange);
             box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 15px 30px;
             display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;
         }
-        .logo-area img { height: 50px; object-fit: contain; }
-        .header-titles h1 { font-family: 'Montserrat', sans-serif; font-size: 18px; color: var(--dif-dark); font-weight: 700; }
+        .logo-area img { height: 55px; object-fit: contain; }
+        .header-titles h1 { font-family: 'Montserrat', sans-serif; font-size: 17px; color: var(--dif-dark); font-weight: 700; }
         .header-titles p { font-size: 12px; color: var(--dif-orange); font-weight: 600; }
 
         .container { width: 95%; max-width: 1300px; margin: 30px auto; }
         
         .card { background: #ffffff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid var(--border-color); margin-bottom: 30px; overflow: hidden; }
         .card-header { padding: 20px 25px; background: #ffffff; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .card-header h2 { font-family: 'Montserrat', sans-serif; font-size: 16px; color: var(--dif-dark); display: flex; align-items: center; gap: 10px; }
+        .card-header h2 { font-family: 'Montserrat', sans-serif; font-size: 15px; color: var(--dif-dark); display: flex; align-items: center; gap: 10px; }
         .card-header h2 i { color: var(--dif-orange); }
 
-        .btn { padding: 10px 18px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
+        .btn { padding: 10px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
         .btn-primary { background-color: var(--dif-orange); color: #fff; }
         .btn-primary:hover { background-color: #d95e13; }
         .btn-success { background-color: #10b981; color: #fff; }
         .btn-success:hover { background-color: #059669; }
+        .btn-danger { background-color: #ef4444; color: #fff; }
+        .btn-danger:hover { background-color: #dc2626; }
 
-        /* Formulario y Listas Desplegables */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 25px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 25px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--dif-dark); margin-bottom: 8px; }
-        .form-group select, .form-group input {
+        .form-group select {
             width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none; background: #fff;
         }
-        .form-group select:focus, .form-group input:focus { border-color: var(--dif-orange); }
 
-        /* Tabla de Reporte con Totales Automáticos */
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
-        th { background-color: var(--dif-dark); color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; }
+        th, td { padding: 12px 18px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+        th { background-color: var(--dif-dark); color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 12px; text-transform: uppercase; }
         tr:hover { background-color: #f8fafc; }
+        
+        .input-number {
+            width: 95px; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; font-size: 14px;
+        }
+        .input-number:focus { border-color: var(--dif-orange); outline: none; }
+        
         .total-row { background-color: #fff7ed !important; font-weight: 700; color: var(--dif-dark); border-top: 2px solid var(--dif-orange); }
+        .action-bar { padding: 20px 25px; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap; }
 
         .app-content { display: none; }
     </style>
@@ -87,7 +92,7 @@
         <div class="login-card">
             <h2>GCAPAM</h2>
             <p>Ingrese la contraseña institucional</p>
-            <input type="password" id="accessPassword" placeholder="Contraseña..." onkeypress="handleLoginKey(event)">
+            <input type="password" id="accessPassword" placeholder="Contraseña..." onkeypress="if(event.key==='Enter') checkPassword();">
             <div id="loginError" class="login-error">Contraseña incorrecta. Intente de nuevo.</div>
             <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="checkPassword()">Ingresar al Sistema</button>
         </div>
@@ -97,25 +102,24 @@
     <div id="appContent" class="app-content">
         <header class="main-header">
             <div class="logo-area">
-                <img src="https://noemi-desing.github.io/acesoriasPUB/assets/logo-dif.png" alt="DIF Jalisco" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'40\'><text x=\'0\' y=\'25\' font-size=\'18\' font-weight=\'bold\' fill=\'%23f37021\'>DIF JALISCO</text></svg>'">
+                <img src="https://noemi-desing.github.io/acesoriasPUB/assets/logo-dif.png" alt="DIF Jalisco" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'130\' height=\'40\'><text x=\'0\' y=\'25\' font-size=\'18\' font-weight=\'bold\' fill=\'%23f37021\'>DIF JALISCO</text></svg>'">
             </div>
             <div class="header-titles">
                 <h1>GCAPAM (Departamento de Gestión y Control de Atención a Población Adulta Mayor)</h1>
-                <p>Módulo de Reporteo e Integración Operativa de Centros</p>
+                <p>Plataforma de Reporteo Mensual y Control Operativo por Centro</p>
             </div>
         </header>
 
         <main class="container">
-            <!-- Sección de Registro / Selección -->
+            <!-- Selección de Centro y Periodo -->
             <section class="card">
                 <div class="card-header">
-                    <h2><i class="fa-solid fa-file-pen"></i> Selección de Centro y Periodo de Reporte</h2>
-                    <button class="btn btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Reporte del Centro (Excel)</button>
+                    <h2><i class="fa-solid fa-building-user"></i> Identificación del Centro y Mes a Reportar</h2>
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label><i class="fa-solid fa-building"></i> Seleccione el Centro:</label>
-                        <select id="selectCentro" onchange="actualizarReporte()">
+                        <label><i class="fa-solid fa-house-chimney"></i> Seleccione su Centro:</label>
+                        <select id="selectCentro">
                             <option value="Centro para el Desarrollo Integral del Adulto Mayor (Bugambilias)">Centro para el Desarrollo Integral del Adulto Mayor (Bugambilias)</option>
                             <option value="Centro de Día Eduardo Montaño">Centro de Día Eduardo Montaño</option>
                             <option value="Centro Tapatío de Atención para el Adulto Mayor (CAPAM) / Clínica de la Memoria">Centro Tapatío de Atención para el Adulto Mayor (CAPAM) / Clínica de la Memoria</option>
@@ -140,40 +144,34 @@
                             <option value="Diciembre">Diciembre</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label><i class="fa-solid fa-list-check"></i> Área de Servicio:</label>
-                        <select id="selectArea" onchange="actualizarReporte()">
-                            <option value="Asistencia Alimentaria y Raciones">Asistencia Alimentaria y Raciones</option>
-                            <option value="Trabajo Social y Apoyo Comunitario">Trabajo Social y Apoyo Comunitario</option>
-                            <option value="Servicios de Psicología">Servicios de Psicología</option>
-                            <option value="Servicios Jurídicos">Servicios Jurídicos</option>
-                            <option value="Actividades, Talleres y Residencias">Actividades, Talleres y Residencias</option>
-                        </select>
-                    </div>
                 </div>
             </section>
 
-            <!-- Tabla de Resumen con Sumas Automáticas -->
+            <!-- Formato de Captura Operativa -->
             <section class="card">
                 <div class="card-header">
-                    <h2><i class="fa-solid fa-table-cells"></i> Formato de Reporteo Mensual</h2>
-                    <span id="lblCentroActual" style="font-size: 13px; font-weight: 600; color: var(--dif-orange);">Bugambilias</span>
+                    <h2><i class="fa-solid fa-file-excel"></i> Formato de Reporte Mensual del Centro</h2>
+                    <span id="lblEstado" style="font-size: 12px; font-weight: 600; color: #10b981;"><i class="fa-solid fa-circle-check"></i> Listo para captura</span>
                 </div>
                 <div class="table-responsive">
                     <table id="reportTable">
                         <thead>
                             <tr>
-                                <th>Descripción de Actividad / Servicio / Indicador</th>
-                                <th>Registros Mes Anterior</th>
-                                <th>Altas / Nuevos</th>
-                                <th>Bajas</th>
-                                <th>Total Atendidos (Subtotal)</th>
+                                <th style="width: 48%;">Área de Servicio / Actividad Operativa</th>
+                                <th style="width: 13%; text-align: center;">Mes Anterior</th>
+                                <th style="width: 13%; text-align: center;">Altas / Nuevos</th>
+                                <th style="width: 13%; text-align: center;">Bajas</th>
+                                <th style="width: 13%; text-align: center;">Total Atendidos</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody">
-                            <!-- Los datos se generan dinámicamente y se suman automáticamente -->
+                            <!-- Filas dinámicas independientes -->
                         </tbody>
                     </table>
+                </div>
+                <div class="action-bar">
+                    <button class="btn btn-danger" onclick="limpiarFormulario()"><i class="fa-solid fa-broom"></i> Limpiar para Siguiente Mes</button>
+                    <button class="btn btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Reporte en Excel</button>
                 </div>
             </section>
         </main>
@@ -185,7 +183,7 @@
             if (pwd === "CENTROS") {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('appContent').style.display = 'block';
-                actualizarReporte();
+                inicializarTabla();
             } else {
                 let err = document.getElementById('loginError');
                 err.style.display = 'block';
@@ -193,86 +191,89 @@
             }
         }
 
-        function handleLoginKey(e) {
-            if (e.key === 'Enter') { checkPassword(); }
-        }
+        // Categorías operativas independientes solicitadas
+        const areasOperativas = [
+            "Raciones Alimentarias y Apoyo Nutricional",
+            "Apoyo Social y Comunitario",
+            "Servicios Psicológicos",
+            "Trabajo Social",
+            "Servicios Jurídicos y Orientación Legal"
+        ];
 
-        const datosAreas = {
-            "Asistencia Alimentaria y Raciones": [
-                { desc: "Desayunos y comidas servidas en comedor del centro", mesAnt: 110, altas: 12, bajas: 4 },
-                { desc: "Entrega mensual de despensas y apoyos alimentarios directos", mesAnt: 75, altas: 8, bajas: 2 },
-                { desc: "Dotación de suplementos nutricionales específicos", mesAnt: 25, altas: 3, bajas: 1 }
-            ],
-            "Trabajo Social y Apoyo Comunitario": [
-                { desc: "Estudios socioeconómicos y valoraciones de ingreso", mesAnt: 40, altas: 7, bajas: 2 },
-                { desc: "Visitas domiciliarias y seguimiento de casos", mesAnt: 20, altas: 5, bajas: 1 },
-                { desc: "Canalización a redes institucionales de apoyo social", mesAnt: 15, altas: 4, bajas: 2 }
-            ],
-            "Servicios de Psicología": [
-                { desc: "Sesiones de psicoterapia individual a residentes / usuarios", mesAnt: 35, altas: 6, bajas: 2 },
-                { desc: "Talleres y dinámicas grupales de salud mental y cognitiva", mesAnt: 55, altas: 10, bajas: 3 }
-            ],
-            "Servicios Jurídicos": [
-                { desc: "Asesorías jurídicas especializadas y orientación legal", mesAnt: 22, altas: 4, bajas: 1 },
-                { desc: "Gestión de trámites de protección familiar y civil", mesAnt: 14, altas: 3, bajas: 1 }
-            ],
-            "Actividades, Talleres y Residencias": [
-                { desc: "Clases de activación física, gerontología y motricidad", mesAnt: 90, altas: 12, bajas: 5 },
-                { desc: "Talleres ocupacionales, manualidades y recreación", mesAnt: 65, altas: 8, bajas: 3 },
-                { desc: "Atención integral de residentes y pernocta en asilo/casa hogar", mesAnt: 45, altas: 2, bajas: 1 }
-            ]
-        };
-
-        function actualizarReporte() {
-            let centro = document.getElementById('selectCentro').value;
-            let area = document.getElementById('selectArea').value;
-            document.getElementById('lblCentroActual').textContent = centro + " — " + area;
-
+        function inicializarTabla() {
             let tbody = document.getElementById('tableBody');
             tbody.innerHTML = "";
 
-            let items = datosAreas[area] || [];
-            let sumAnt = 0, sumAltas = 0, sumBajas = 0, sumTotal = 0;
-
-            items.forEach(item => {
-                let subtotal = item.mesAnt + item.altas - item.bajas;
-                sumAnt += item.mesAnt;
-                sumAltas += item.altas;
-                sumBajas += item.bajas;
-                sumTotal += subtotal;
-
+            areasOperativas.forEach((area, index) => {
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${item.desc}</td>
-                    <td>${item.mesAnt}</td>
-                    <td>${item.altas}</td>
-                    <td>${item.bajas}</td>
-                    <td><strong>${subtotal}</strong></td>
+                    <td><strong>${area}</strong></td>
+                    <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="ant_${index}"></td>
+                    <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="alt_${index}"></td>
+                    <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="baj_${index}"></td>
+                    <td style="text-align: center;"><strong id="tot_${index}" style="color: var(--dif-orange);">0</strong></td>
                 `;
                 tbody.appendChild(tr);
             });
 
+            // Fila de Totales Automáticos
             let trTotal = document.createElement('tr');
             trTotal.className = "total-row";
             trTotal.innerHTML = `
-                <td>TOTAL GENERAL DE OPERACIÓN</td>
-                <td>${sumAnt}</td>
-                <td>${sumAltas}</td>
-                <td>${sumBajas}</td>
-                <td>${sumTotal}</td>
+                <td>TOTAL GENERAL DEL CENTRO</td>
+                <td style="text-align: center;" id="sumAnt">0</td>
+                <td style="text-align: center;" id="sumAlt">0</td>
+                <td style="text-align: center;" id="sumBaj">0</td>
+                <td style="text-align: center;" id="sumTot">0</td>
             `;
             tbody.appendChild(trTotal);
+            calcularTotales();
+        }
+
+        function calcularTotales() {
+            let tAnt = 0, tAlt = 0, tBaj = 0, tTot = 0;
+
+            areasOperativas.forEach((_, index) => {
+                let ant = parseInt(document.getElementById(`ant_${index}`).value) || 0;
+                let alt = parseInt(document.getElementById(`alt_${index}`).value) || 0;
+                let baj = parseInt(document.getElementById(`baj_${index}`).value) || 0;
+                
+                let subtotal = ant + alt - baj;
+                if (subtotal < 0) subtotal = 0;
+
+                document.getElementById(`tot_${index}`).textContent = subtotal;
+
+                tAnt += ant;
+                tAlt += alt;
+                tBaj += baj;
+                tTot += subtotal;
+            });
+
+            document.getElementById('sumAnt').textContent = tAnt;
+            document.getElementById('sumAlt').textContent = tAlt;
+            document.getElementById('sumBaj').textContent = tBaj;
+            document.getElementById('sumTot').textContent = tTot;
+        }
+
+        function limpiarFormulario() {
+            if (confirm("¿Desea vaciar todos los campos para iniciar el registro del siguiente mes? Asegúrese de haber descargado su archivo de Excel previo.")) {
+                areasOperativas.forEach((_, index) => {
+                    document.getElementById(`ant_${index}`).value = 0;
+                    document.getElementById(`alt_${index}`).value = 0;
+                    document.getElementById(`baj_${index}`).value = 0;
+                });
+                calcularTotales();
+            }
         }
 
         function exportToExcel() {
             let centro = document.getElementById('selectCentro').value;
             let mes = document.getElementById('selectMes').value;
-            let area = document.getElementById('selectArea').value;
             
             let table = document.getElementById('reportTable');
             let html = table.outerHTML;
             
-            let blob = new Blob(['\ufeff' + `<html><head><meta charset="utf-8"><title>Reporte ${centro}</title></head><body><h3>GCAPAM - Reporte Mensual de Centro</h3><p><b>Centro:</b> ${centro} <br><b>Mes de Reporte:</b> ${mes} <br><b>Área:</b> ${area}</p>` + html + '</body></html>'], {
+            let blob = new Blob(['\ufeff' + `<html><head><meta charset="utf-8"><title>Reporte Mensual</title></head><body><h3>GCAPAM - Reporte Operativo Mensual de Centro</h3><p><b>Centro:</b> ${centro} <br><b>Mes Reportado:</b> ${mes}</p>` + html + '</body></html>'], {
                 type: 'application/vnd.ms-excel'
             });
             
