@@ -61,6 +61,7 @@
         .btn-success:hover { background-color: #059669; }
         .btn-secondary-gray { background-color: var(--dif-gray); color: #fff; }
         .btn-secondary-gray:hover { background-color: #475161; }
+        .btn-sm { padding: 4px 8px; font-size: 11px; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 25px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--dif-gray); margin-bottom: 8px; }
@@ -162,7 +163,7 @@
             <section class="card">
                 <div class="card-header">
                     <h2><i class="fa-solid fa-file-excel"></i> Hoja de Registro y Control Institucional</h2>
-                    <span id="lblEstado" style="font-size: 12px; font-weight: 600; color: #10b981;"><i class="fa-solid fa-circle-check"></i> Listo para captura</span>
+                    <span id="lblEstado" style="font-size: 12px; font-weight: 600; color: #10b981;"><i class="fa-solid fa-circle-check"></i> Dinámico (Agregue conceptos según necesite)</span>
                 </div>
                 <div class="table-responsive">
                     <table id="reportTable">
@@ -170,11 +171,12 @@
                             <tr>
                                 <th style="width: 18%;">Tema Principal</th>
                                 <th style="width: 18%;">Subtema</th>
-                                <th style="width: 26%;">Concepto (Lista Desplegable en Columna 3)</th>
-                                <th style="width: 8%; background: #374151;">Hombre</th>
-                                <th style="width: 8%; background: #475161;">Mujer</th>
+                                <th style="width: 26%;">Concepto (Lista Desplegable - 1 por celda)</th>
+                                <th style="width: 7%; background: #374151;">Hombre</th>
+                                <th style="width: 7%; background: #475161;">Mujer</th>
                                 <th style="width: 14%;">Observaciones</th>
-                                <th style="width: 8%; background: var(--dif-orange);">Total</th>
+                                <th style="width: 7%; background: var(--dif-orange);">Total</th>
+                                <th style="width: 3%;">Acción</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody">
@@ -183,7 +185,7 @@
                     </table>
                 </div>
                 <div class="action-bar">
-                    <button class="btn btn-secondary-gray" onclick="limpiarFormulario()"><i class="fa-solid fa-broom"></i> Limpiar para Siguiente Mes</button>
+                    <button class="btn btn-secondary-gray" onclick="limpiarFormulario()"><i class="fa-solid fa-broom"></i> Limpiar Registros</button>
                     <button class="btn btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Reporte en Excel</button>
                 </div>
             </section>
@@ -204,226 +206,214 @@
             }
         }
 
-        // Catálogo completo con las opciones exactas para desplegar en cada celda de la Columna 3
-        const estructuraMatriz = [
-            {
-                tema: "Población Atendida",
-                subtemas: [
-                    {
-                        subtema: "Población",
-                        opcionesDesplegables: [
-                            "Población Atendida (Mes anterior, Altas, Bajas, Subtotal de residentes)",
-                            "Total de Servicios / Sesiones / Asistencias generales del periodo",
-                            "Promedio diario de atención a residentes"
-                        ]
-                    }
+        // Estructura base con listas de opciones unitarias por celda
+        const catalogoConceptos = {
+            "Población Atendida": {
+                subtema: "Control de Población",
+                opciones: [
+                    "Población Atendida (Mes anterior, Altas, Bajas, Subtotal de residentes)",
+                    "Total de Servicios / Sesiones / Asistencias generales del periodo",
+                    "Promedio diario de atención a residentes"
                 ]
             },
-            {
-                tema: "Raciones",
-                subtemas: [
-                    {
-                        subtema: "Alimentación",
-                        opcionesDesplegables: [
-                            "Raciones Alimentarias y Comidas servidas diarias",
-                            "Dotación de desayunos y Cenas calientes",
-                            "Colaciones y suplementos alimenticios especiales"
-                        ]
-                    }
+            "Raciones": {
+                subtema: "Alimentación",
+                opciones: [
+                    "Raciones Alimentarias y Comidas servidas diarias",
+                    "Dotación de desayunos y Cenas calientes",
+                    "Colaciones y suplementos alimenticios especiales"
                 ]
             },
-            {
-                tema: "Servicio medico",
-                subtemas: [
-                    {
-                        subtema: "Consultas",
-                        opcionesDesplegables: ["Consultas"]
-                    },
-                    {
-                        subtema: "Enfermería",
-                        opcionesDesplegables: ["Enfermería"]
-                    },
-                    {
-                        subtema: "Cuidados Diarios, Asistencia e Higiene",
-                        opcionesDesplegables: ["Cuidados Diarios, Asistencia e Higiene"]
-                    },
-                    {
-                        subtema: "Rehabilitación y Terapia Física",
-                        opcionesDesplegables: ["Rehabilitación y Terapia Física"]
-                    },
-                    {
-                        subtema: "Podología",
-                        opcionesDesplegables: ["Podología"]
-                    },
-                    {
-                        subtema: "Gerontología",
-                        opcionesDesplegables: ["Gerontología"]
-                    },
-                    {
-                        subtema: "Medicinas Integrativas y Terapias Alternativas",
-                        opcionesDesplegables: ["Medicinas Integrativas y Terapias Alternativas"]
-                    }
+            "Servicio medico": {
+                subtema: "Atención Médica",
+                opciones: [
+                    "Consultas",
+                    "Enfermería",
+                    "Cuidados Diarios, Asistencia e Higiene",
+                    "Rehabilitación y Terapia Física",
+                    "Podología",
+                    "Gerontología",
+                    "Medicinas Integrativas y Terapias Alternativas"
                 ]
             },
-            {
-                tema: "Psicología",
-                subtemas: [
-                    {
-                        subtema: "Evaluación psicométrica y diagnóstico psicológico",
-                        opcionesDesplegables: [
-                            "Evaluación psicométrica y diagnóstico psicológico",
-                            "Psicoterapia individual y familiar",
-                            "Intervención en crisis y procesos de duelo"
-                        ]
-                    }
+            "Psicología": {
+                subtema: "Salud Mental",
+                opciones: [
+                    "Evaluación psicométrica y diagnóstico psicológico",
+                    "Psicoterapia individual y familiar",
+                    "Intervención en crisis y procesos de duelo"
                 ]
             },
-            {
-                tema: "Accesibilidad y transporte",
-                subtemas: [
-                    {
-                        subtema: "Traslado adaptado para citas y consultas médicas externas",
-                        opcionesDesplegables: [
-                            "Traslado adaptado para citas y consultas médicas externas",
-                            "Gestión de rutas y movilidad institucional"
-                        ]
-                    }
+            "Accesibilidad y transporte": {
+                subtema: "Movilidad",
+                opciones: [
+                    "Traslado adaptado para citas y consultas médicas externas",
+                    "Gestión de rutas y movilidad institucional"
                 ]
             },
-            {
-                tema: "Apoyos asistenciales",
-                subtemas: [
-                    {
-                        subtema: "Trabajo social",
-                        opcionesDesplegables: [
-                            "Trabajo social",
-                            "Estudios socioeconómicos y visitas domiciliarias",
-                            "Gestión de apoyos asistenciales directos"
-                        ]
-                    }
+            "Apoyos asistenciales": {
+                subtema: "Trabajo Social",
+                opciones: [
+                    "Trabajo social",
+                    "Estudios socioeconómicos y visitas domiciliarias",
+                    "Gestión de apoyos asistenciales directos"
                 ]
             },
-            {
-                tema: "Capacitacion talleres y platicas",
-                subtemas: [
-                    {
-                        subtema: "Culturales",
-                        opcionesDesplegables: ["Culturales"]
-                    },
-                    {
-                        subtema: "Deportivo",
-                        opcionesDesplegables: ["Deportivo"]
-                    },
-                    {
-                        subtema: "De salud",
-                        opcionesDesplegables: ["De salud"]
-                    },
-                    {
-                        subtema: "Ocupacionales",
-                        opcionesDesplegables: ["Ocupacionales"]
-                    },
-                    {
-                        subtema: "Formativas",
-                        opcionesDesplegables: ["Formativas"]
-                    },
-                    {
-                        subtema: "Recreativas",
-                        opcionesDesplegables: ["Recreativas"]
-                    },
-                    {
-                        subtema: "tecnologia",
-                        opcionesDesplegables: ["tecnologia"]
-                    }
+            "Capacitacion talleres y platicas": {
+                subtema: "Talleres",
+                opciones: [
+                    "Culturales",
+                    "Deportivo",
+                    "De salud",
+                    "Ocupacionales",
+                    "Formativas",
+                    "Recreativas",
+                    "Tecnología"
                 ]
             },
-            {
-                tema: "Encuentros intergeneracionales",
-                subtemas: [
-                    {
-                        subtema: "Encuentros intergeneracionales",
-                        opcionesDesplegables: [
-                            "Encuentros intergeneracionales",
-                            "Actividades con voluntarios y escuelas"
-                        ]
-                    }
+            "Encuentros intergeneracionales": {
+                subtema: "Encuentros intergeneracionales",
+                opciones: [
+                    "Encuentros intergeneracionales",
+                    "Actividades con voluntarios y escuelas"
                 ]
             },
-            {
-                tema: "Eventos",
-                subtemas: [
-                    {
-                        subtema: "Eventos",
-                        opcionesDesplegables: ["Eventos", "Festivales y conmemoraciones especiales"]
-                    }
+            "Eventos": {
+                subtema: "Eventos",
+                opciones: [
+                    "Eventos",
+                    "Festivales y conmemoraciones especiales"
                 ]
             },
-            {
-                tema: "Juridico",
-                subtemas: [
-                    {
-                        subtema: "Juridico",
-                        opcionesDesplegables: ["Juridico", "Asesoría legal y testamentos"]
-                    }
+            "Juridico": {
+                subtema: "Juridico",
+                opciones: [
+                    "Juridico",
+                    "Asesoría legal y testamentos"
                 ]
             },
-            {
-                tema: "Otros",
-                subtemas: [
-                    {
-                        subtema: "Otros",
-                        opcionesDesplegables: ["Otros", "Trámites y gestiones extraordinarias"]
-                    }
+            "Otros": {
+                subtema: "Otros",
+                opciones: [
+                    "Otros",
+                    "Trámites y gestiones extraordinarias"
                 ]
             }
-        ];
+        };
+
+        // Estado inicial de las filas del reporte (1 fila por defecto para cada tema)
+        let filasDinamicas = [];
 
         function inicializarTabla() {
+            filasDinamicas = [];
+            Object.keys(catalogoConceptos).forEach(tema => {
+                // Agregar al menos 1 concepto por defecto al iniciar
+                filasDinamicas.push({
+                    tema: tema,
+                    subtema: catalogoConceptos[tema].subtema,
+                    conceptoSeleccionado: catalogoConceptos[tema].opciones[0],
+                    hombre: 0,
+                    mujer: 0,
+                    obs: ""
+                });
+            });
+            renderizarTabla();
+        }
+
+        function agregarFila(temaNombre) {
+            let cat = catalogoConceptos[temaNombre];
+            filasDinamicas.push({
+                tema: temaNombre,
+                subtema: cat.subtema,
+                conceptoSeleccionado: cat.opciones[0],
+                hombre: 0,
+                mujer: 0,
+                obs: ""
+            });
+            renderizarTabla();
+        }
+
+        function eliminarFila(index) {
+            if (filasDinamicas.length > 1) {
+                filasDinamicas.splice(index, 1);
+                renderizarTabla();
+            } else {
+                alert("Debe mantener al menos una fila en el reporte.");
+            }
+        }
+
+        function renderizarTabla() {
             let tbody = document.getElementById('tableBody');
             tbody.innerHTML = "";
+            
+            // Agrupar filas dinámicas por Tema para calcular spans y subtotales correctos
+            let temasUnicos = Object.keys(catalogoConceptos);
             let globalRowIndex = 0;
+            let sumaGralH = 0, sumaGralM = 0, sumaGralTotal = 0;
 
-            estructuraMatriz.forEach((temaObj, tIndex) => {
-                let totalFilasTema = 0;
-                temaObj.subtemas.forEach(sub => totalFilasTema += sub.opcionesDesplegables.length);
-                let tFirstRow = true;
+            temasUnicos.forEach((temaNombre, tIndex) => {
+                let filasDelTema = filasDinamicas.map((f, idx) => ({f, idx})).filter(item => item.f.tema === temaNombre);
+                let cantidadFilas = filasDelTema.length;
+                
+                let temaH = 0, temaM = 0, temaTot = 0;
 
-                temaObj.subtemas.forEach((subObj) => {
-                    subObj.opcionesDesplegables.forEach((opcionItem, cIndex) => {
+                if (cantidadFilas > 0) {
+                    filasDelTema.forEach((item, cIndex) => {
+                        let f = item.f;
+                        let realIdx = item.idx;
                         let tr = document.createElement('tr');
-                        
-                        let colTema = tFirstRow ? `<td rowspan="${totalFilasTema + 1}" style="background-color: #f1f5f9; font-weight: 700; vertical-align: middle; color: var(--dif-gray);">${temaObj.tema}</td>` : '';
-                        if (tFirstRow) tFirstRow = false;
 
-                        let colSubtema = (cIndex === 0) ? `<td rowspan="${subObj.opcionesDesplegables.length}" style="background-color: #f8fafc; font-weight: 600; vertical-align: middle; color: #475569;">${subObj.subtema}</td>` : '';
+                        let colTema = (cIndex === 0) ? `<td rowspan="${cantidadFilas + 1}" style="background-color: #f1f5f9; font-weight: 700; vertical-align: middle; color: var(--dif-gray);">${temaNombre}<br><br><button class="btn btn-primary btn-sm" onclick="agregarFila('${temaNombre}')" title="Agregar concepto a este tema"><i class="fa-solid fa-plus"></i> Agregar Concepto</button></td>` : '';
+                        let colSubtema = (cIndex === 0) ? `<td rowspan="${cantidadFilas}" style="background-color: #f8fafc; font-weight: 600; vertical-align: middle; color: #475569;">${f.subtema}</td>` : '';
 
-                        // Menú desplegable completo en la Columna 3 con todas las opciones disponibles de esa sección
-                        let optionsHtml = subObj.opcionesDesplegables.map(opt => `<option value="${opt}" ${opt === opcionItem ? 'selected' : ''}>${opt}</option>`).join('');
-                        let rId = globalRowIndex++;
+                        // Menú desplegable unitario (un concepto por celda)
+                        let opcionesHtml = catalogoConceptos[temaNombre].opciones.map(opt => `<option value="${opt}" ${opt === f.conceptoSeleccionado ? 'selected' : ''}>${opt}</option>`).join('');
+
+                        let rowTot = f.hombre + f.mujer;
+                        temaH += f.hombre;
+                        temaM += f.mujer;
+                        temaTot += rowTot;
 
                         tr.innerHTML = `
                             ${colTema}
                             ${colSubtema}
-                            <td><select class="select-concepto">${optionsHtml}</select></td>
-                            <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="h_${rId}"></td>
-                            <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="m_${rId}"></td>
-                            <td><input type="text" class="input-obs" id="obs_${rId}" placeholder="Detalle..."></td>
-                            <td style="text-align: center;"><strong id="tot_${rId}" style="color: var(--dif-orange);">0</strong></td>
+                            <td><select class="select-concepto" onchange="actualizarDato(${realIdx}, 'conceptoSeleccionado', this.value)">${opcionesHtml}</select></td>
+                            <td style="text-align: center;"><input type="number" class="input-number" value="${f.hombre}" min="0" oninput="actualizarDato(${realIdx}, 'hombre', parseInt(this.value)||0)" id="h_${realIdx}"></td>
+                            <td style="text-align: center;"><input type="number" class="input-number" value="${f.mujer}" min="0" oninput="actualizarDato(${realIdx}, 'mujer', parseInt(this.value)||0)" id="m_${realIdx}"></td>
+                            <td><input type="text" class="input-obs" value="${f.obs}" oninput="actualizarDato(${realIdx}, 'obs', this.value)" placeholder="Detalle..."></td>
+                            <td style="text-align: center;"><strong id="tot_${realIdx}" style="color: var(--dif-orange);">${rowTot}</strong></td>
+                            <td style="text-align: center;"><button class="btn btn-secondary-gray btn-sm" onclick="eliminarFila(${realIdx})" title="Eliminar fila"><i class="fa-solid fa-trash"></i></button></td>
                         `;
                         tbody.appendChild(tr);
+                        globalRowIndex++;
                     });
-                });
 
-                // Fila de Subtotal por Tema Principal
-                let trTemaSub = document.createElement('tr');
-                trTemaSub.className = "tema-subtotal-row";
-                trTemaSub.innerHTML = `
-                    <td colspan="3" style="text-align: right;">SUBTOTAL - ${temaObj.tema}:</td>
-                    <td style="text-align: center;" id="subH_t${tIndex}">0</td>
-                    <td style="text-align: center;" id="subM_t${tIndex}">0</td>
-                    <td></td>
-                    <td style="text-align: center; color: var(--dif-orange);" id="subTot_t${tIndex}">0</td>
-                `;
-                tbody.appendChild(trTemaSub);
+                    // Fila de Subtotal del Tema
+                    let trSub = document.createElement('tr');
+                    trSub.className = "tema-subtotal-row";
+                    trSub.innerHTML = `
+                        <td colspan="3" style="text-align: right;">SUBTOTAL - ${temaNombre}:</td>
+                        <td style="text-align: center;" id="subH_t${tIndex}">${temaH}</td>
+                        <td style="text-align: center;" id="subM_t${tIndex}">${temaM}</td>
+                        <td></td>
+                        <td style="text-align: center; color: var(--dif-orange);" id="subTot_t${tIndex}">${temaTot}</td>
+                        <td></td>
+                    `;
+                    tbody.appendChild(trSub);
+
+                    sumaGralH += temaH;
+                    sumaGralM += temaM;
+                    sumaGralTotal += temaTot;
+                } else {
+                    // Si el usuario eliminó todas las filas de un tema temporalmente, mostramos al menos el botón para agregar
+                    let trEmpty = document.createElement('tr');
+                    trEmpty.innerHTML = `
+                        <td style="background-color: #f1f5f9; font-weight: 700; color: var(--dif-gray);">${temaNombre}<br><button class="btn btn-primary btn-sm" onclick="agregarFila('${temaNombre}')"><i class="fa-solid fa-plus"></i> Agregar Concepto</button></td>
+                        <td style="background-color: #f8fafc;">${catalogoConceptos[temaNombre].subtema}</td>
+                        <td colspan="6" style="text-align: center; color: #94a3b8; font-style: italic;">Sin conceptos registrados en este tema. Haga clic en agregar.</td>
+                    `;
+                    tbody.appendChild(trEmpty);
+                }
             });
 
             // Fila de Total General Institucional
@@ -431,68 +421,67 @@
             trTotal.className = "total-row";
             trTotal.innerHTML = `
                 <td colspan="3" style="text-align: right;">TOTAL GENERAL INSTITUCIONAL:</td>
-                <td style="text-align: center;" id="sumH">0</td>
-                <td style="text-align: center;" id="sumM">0</td>
+                <td style="text-align: center;" id="sumH">${sumaGralH}</td>
+                <td style="text-align: center;" id="sumM">${sumaGralM}</td>
                 <td></td>
-                <td style="text-align: center; color: var(--dif-orange);" id="sumTotGral">0</td>
+                <td style="text-align: center; color: var(--dif-orange);" id="sumTotGral">${sumaGralTotal}</td>
+                <td></td>
             `;
             tbody.appendChild(trTotal);
-            calcularTotales();
         }
 
-        function calcularTotales() {
-            let globalRowIndex = 0;
-            let sumTotalH = 0, sumTotalM = 0, sumTotalGral = 0;
+        function actualizarDato(index, campo, valor) {
+            filasDinamicas[index][campo] = valor;
+            // Actualizar solo el total de la fila afectada y subtotales en tiempo real sin redibujar todo para no perder foco
+            if (campo === 'hombre' || campo === 'mujer') {
+                let f = filasDinamicas[index];
+                let rowTot = f.hombre + f.mujer;
+                let totEl = document.getElementById(`tot_${index}`);
+                if (totEl) totEl.textContent = rowTot;
+                recalcularTotalesTotalesEnDOM();
+            }
+        }
 
-            estructuraMatriz.forEach((temaObj, tIndex) => {
-                let temaH = 0, temaM = 0, temaGral = 0;
+        function recalcularTotalesTotalesEnDOM() {
+            let temasUnicos = Object.keys(catalogoConceptos);
+            let sumaGralH = 0, sumaGralM = 0, sumaGralTotal = 0;
 
-                temaObj.subtemas.forEach(subObj => {
-                    subObj.opcionesDesplegables.forEach(() => {
-                        let rId = globalRowIndex++;
-                        let h = parseInt(document.getElementById(`h_${rId}`).value) || 0;
-                        let m = parseInt(document.getElementById(`m_${rId}`).value) || 0;
-                        let rowTot = h + m;
+            temasUnicos.forEach((temaNombre, tIndex) => {
+                let filasDelTema = filasDinamicas.map((f, idx) => ({f, idx})).filter(item => item.f.tema === temaNombre);
+                let temaH = 0, temaM = 0, temaTot = 0;
 
-                        document.getElementById(`tot_${rId}`).textContent = rowTot;
-
-                        temaH += h;
-                        temaM += m;
-                        temaGral += rowTot;
-                    });
+                filasDelTema.forEach(item => {
+                    let f = item.f;
+                    temaH += f.hombre;
+                    temaM += f.mujer;
+                    temaTot += (f.hombre + f.mujer);
                 });
 
-                document.getElementById(`subH_t${tIndex}`).textContent = temaH;
-                document.getElementById(`subM_t${tIndex}`).textContent = temaM;
-                document.getElementById(`subTot_t${tIndex}`).textContent = temaGral;
+                let subHEl = document.getElementById(`subH_t${tIndex}`);
+                let subMEl = document.getElementById(`subM_t${tIndex}`);
+                let subTotEl = document.getElementById(`subTot_t${tIndex}`);
 
-                sumTotalH += temaH;
-                sumTotalM += temaM;
-                sumTotalGral += temaGral;
+                if (subHEl) subHEl.textContent = temaH;
+                if (subMEl) subMEl.textContent = temaM;
+                if (subTotEl) subTotEl.textContent = temaTot;
+
+                sumaGralH += temaH;
+                sumaGralM += temaM;
+                sumaGralTotal += temaTot;
             });
 
-            document.getElementById('sumH').textContent = sumTotalH;
-            document.getElementById('sumM').textContent = sumTotalM;
-            document.getElementById('sumTotGral').textContent = sumTotalGral;
+            let sumHEl = document.getElementById('sumH');
+            let sumMEl = document.getElementById('sumM');
+            let sumTotGralEl = document.getElementById('sumTotGral');
+
+            if (sumHEl) sumHEl.textContent = sumaGralH;
+            if (sumMEl) sumMEl.textContent = sumaGralM;
+            if (sumTotGralEl) sumTotGralEl.textContent = sumaGralTotal;
         }
 
         function limpiarFormulario() {
-            if (confirm("¿Desea vaciar todos los contadores y observaciones para iniciar el siguiente mes?")) {
-                let globalRowIndex = 0;
-                estructuraMatriz.forEach(temaObj => {
-                    temaObj.subtemas.forEach(subObj => {
-                        subObj.opcionesDesplegables.forEach(() => {
-                            let rId = globalRowIndex++;
-                            let elH = document.getElementById(`h_${rId}`);
-                            let elM = document.getElementById(`m_${rId}`);
-                            let elObs = document.getElementById(`obs_${rId}`);
-                            if (elH) elH.value = 0;
-                            if (elM) elM.value = 0;
-                            if (elObs) elObs.value = "";
-                        });
-                    });
-                });
-                calcularTotales();
+            if (confirm("¿Desea vaciar todos los registros para iniciar de nuevo?")) {
+                inicializarTabla();
             }
         }
 
