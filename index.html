@@ -531,156 +531,146 @@
             let temasUnicos = Object.keys(catalogoConceptos);
             let sumaGralH = 0, sumaGralM = 0, sumaGralTotal = 0;
 
-            temasUnicos.forEach((temaNombre, tIndex) => {
+            temasUnicos.forEach((temaNombre) => {
                 let filasDelTema = filasDinamicas.map((f, idx) => ({f, idx})).filter(item => item.f.tema === temaNombre);
-                let cantidadFilas = filasDelTema.length;
                 
-                let temaH = 0, temaM = 0, temaTot = 0;
+                if (filasDelTema.length === 0) return;
 
-                if (cantidadFilas > 0) {
-                    filasDelTema.forEach((item, cIndex) => {
-                        let f = item.f;
-                        let realIdx = item.idx;
-                        let tr = document.createElement('tr');
+                let subH = 0, subM = 0;
 
-                        let colTema = (cIndex === 0) ? `<td rowspan="${cantidadFilas + 1}" style="background-color: #f1f5f9; font-weight: 700; vertical-align: middle; color: var(--dif-gray);">${temaNombre}<br><br><button class="btn btn-primary btn-sm" onclick="agregarFila('${temaNombre}')" title="Agregar concepto a este tema"><i class="fa-solid fa-plus"></i> Agregar Concepto</button></td>` : '';
-                        let colSubtema = (cIndex === 0) ? `<td rowspan="${cantidadFilas}" style="background-color: #f8fafc; font-weight: 600; vertical-align: middle; color: #475569;">${f.subtema}</td>` : '';
+                filasDelTema.forEach(({f, idx}, subIndex) => {
+                    let h = parseInt(f.hombre) || 0;
+                    let m = parseInt(f.mujer) || 0;
+                    let tot = h + m;
+                    subH += h;
+                    subM += m;
 
-                        let opcionesHtml = catalogoConceptos[temaNombre].opciones.map(opt => `<option value="${opt}" ${opt === f.conceptoSeleccionado ? 'selected' : ''}>${opt}</option>`).join('');
+                    sumaGralH += h;
+                    sumaGralM += m;
 
-                        let esPersonalizado = (f.conceptoSeleccionado === "+ Otro servicio (Escribir concepto personalizado)" || f.esCustom);
-                        let campoConceptoHtml = '';
+                    let tr = document.createElement('tr');
 
-                        if (temaNombre === "Otros Servicios" && (f.conceptoSeleccionado === "+ Otro servicio (Escribir concepto personalizado)" || f.esCustom)) {
-                            if(!f.esCustom) { f.conceptoCustomVal = ""; f.esCustom = true; }
-                            campoConceptoHtml = `
-                                <div style="display: flex; flex-direction: column; gap: 4px;">
-                                    <select class="select-concepto" onchange="cambiarTipoConcepto(${realIdx}, this.value)">${opcionesHtml}</select>
-                                    <input type="text" class="input-custom-concepto" value="${f.conceptoCustomVal || ''}" placeholder="Escriba su concepto aquí..." oninput="actualizarDato(${realIdx}, 'conceptoCustomVal', this.value)">
-                                </div>`;
-                        } else {
-                            f.esCustom = false;
-                            campoConceptoHtml = `<select class="select-concepto" onchange="cambiarTipoConcepto(${realIdx}, this.value)">${opcionesHtml}</select>`;
-                        }
-
-                        let rowTot = f.hombre + f.mujer;
-                        temaH += f.hombre;
-                        temaM += f.mujer;
-                        temaTot += rowTot;
-
-                        tr.innerHTML = `
-                            ${colTema}
-                            ${colSubtema}
-                            <td>${campoConceptoHtml}</td>
-                            <td style="text-align: center;"><input type="number" class="input-number" value="${f.hombre}" min="0" oninput="actualizarDato(${realIdx}, 'hombre', parseInt(this.value)||0)"></td>
-                            <td style="text-align: center;"><input type="number" class="input-number" value="${f.mujer}" min="0" oninput="actualizarDato(${realIdx}, 'mujer', parseInt(this.value)||0)"></td>
-                            <td><input type="text" class="input-obs" value="${f.obs}" oninput="actualizarDato(${realIdx}, 'obs', this.value)" placeholder="Detalle..."></td>
-                            <td style="text-align: center;"><strong id="tot_${realIdx}" style="color: var(--dif-orange);">${rowTot}</strong></td>
-                            <td style="text-align: center;"><button class="btn btn-secondary-gray btn-sm" onclick="eliminarFila(${realIdx})" title="Eliminar fila"><i class="fa-solid fa-trash"></i></button></td>
+                    let tdTema = document.createElement('td');
+                    if (subIndex === 0) {
+                        tdTema.rowSpan = filasDelTema.length + 1;
+                        tdTema.style.fontWeight = "700";
+                        tdTema.style.backgroundColor = "#f1f5f9";
+                        tdTema.style.verticalAlign = "top";
+                        tdTema.innerHTML = `
+                            <div style="margin-bottom: 8px; color: var(--dif-gray);">${temaNombre}</div>
+                            <button class="btn btn-primary btn-sm" onclick="agregarFila('${temaNombre}')">
+                                <i class="fa-solid fa-plus"></i> Agregar Concepto
+                            </button>
                         `;
-                        tbody.appendChild(tr);
+                        tr.appendChild(tdTema);
+                    }
+
+                    let tdSub = document.createElement('td');
+                    tdSub.style.color = "#64748b";
+                    tdSub.innerText = f.subtema;
+
+                    let tdConc = document.createElement('td');
+                    let catOpciones = catalogoConceptos[temaNombre].opciones;
+                    
+                    let isCustom = f.conceptoSeleccionado === "__CUSTOM__" || !catOpciones.includes(f.conceptoSeleccionado);
+                    
+                    let selectHtml = `<select class="select-concepto" onchange="cambiarConcepto(${idx}, this.value)">`;
+                    catOpciones.forEach(op => {
+                        let selected = (!isCustom && f.conceptoSeleccionado === op) ? "selected" : "";
+                        selectHtml += `<option value="${op}" ${selected}>${op}</option>`;
                     });
+                    selectHtml += `<option value="__CUSTOM__" ${isCustom ? "selected" : ""}>+ Otro concepto (Escribir personalizado)</option>`;
+                    selectHtml += `</select>`;
 
-                    let trSub = document.createElement('tr');
-                    trSub.className = "tema-subtotal-row";
-                    trSub.innerHTML = `
-                        <td colspan="3" style="text-align: right;">SUBTOTAL - ${temaNombre}:</td>
-                        <td style="text-align: center;" id="subH_t${tIndex}">${temaH}</td>
-                        <td style="text-align: center;" id="subM_t${tIndex}">${temaM}</td>
-                        <td></td>
-                        <td style="text-align: center; color: var(--dif-orange);" id="subTot_t${tIndex}">${temaTot}</td>
-                        <td></td>
-                    `;
-                    tbody.appendChild(trSub);
+                    if (isCustom) {
+                        let customVal = (f.conceptoSeleccionado === "__CUSTOM__") ? "" : f.conceptoSeleccionado;
+                        tdConc.innerHTML = `
+                            ${selectHtml}
+                            <input type="text" class="input-custom-concepto" style="margin-top: 5px;" placeholder="Escriba el concepto..." value="${customVal}" oninput="actualizarCustomConcepto(${idx}, this.value)">
+                        `;
+                    } else {
+                        tdConc.innerHTML = selectHtml;
+                    }
 
-                    sumaGralH += temaH;
-                    sumaGralM += temaM;
-                    sumaGralTotal += temaTot;
-                } else {
-                    let trEmpty = document.createElement('tr');
-                    trEmpty.innerHTML = `
-                        <td style="background-color: #f1f5f9; font-weight: 700; color: var(--dif-gray);">${temaNombre}<br><button class="btn btn-primary btn-sm" onclick="agregarFila('${temaNombre}')"><i class="fa-solid fa-plus"></i> Agregar Concepto</button></td>
-                        <td style="background-color: #f8fafc;">${catalogoConceptos[temaNombre].subtema}</td>
-                        <td colspan="6" style="text-align: center; color: #94a3b8; font-style: italic;">Sin conceptos registrados en este tema. Haga clic en agregar.</td>
-                    `;
-                    tbody.appendChild(trEmpty);
-                }
+                    let tdH = document.createElement('td');
+                    tdH.innerHTML = `<input type="number" min="0" class="input-number" value="${f.hombre}" oninput="actualizarValor(${idx}, 'hombre', this.value)">`;
+
+                    let tdM = document.createElement('td');
+                    tdM.innerHTML = `<input type="number" min="0" class="input-number" value="${f.mujer}" oninput="actualizarValor(${idx}, 'mujer', this.value)">`;
+
+                    let tdObs = document.createElement('td');
+                    tdObs.innerHTML = `<input type="text" class="input-obs" value="${f.obs}" placeholder="Notas..." oninput="actualizarValor(${idx}, 'obs', this.value)">`;
+
+                    let tdTot = document.createElement('td');
+                    tdTot.style.textAlign = "center";
+                    tdTot.style.fontWeight = "700";
+                    tdTot.style.color = "var(--dif-orange)";
+                    tdTot.innerText = tot;
+
+                    let tdAccion = document.createElement('td');
+                    tdAccion.style.textAlign = "center";
+                    tdAccion.innerHTML = `<button class="btn btn-sm" style="background:#fee2e2; color:#dc2626;" onclick="eliminarFila(${idx})" title="Eliminar fila"><i class="fa-solid fa-trash"></i></button>`;
+
+                    tr.appendChild(tdSub);
+                    tr.appendChild(tdConc);
+                    tr.appendChild(tdH);
+                    tr.appendChild(tdM);
+                    tr.appendChild(tdObs);
+                    tr.appendChild(tdTot);
+                    tr.appendChild(tdAccion);
+
+                    tbody.appendChild(tr);
+                });
+
+                let trSub = document.createElement('tr');
+                trSub.className = "tema-subtotal-row";
+                let subTotalGen = subH + subM;
+                trSub.innerHTML = `
+                    <td colspan="3" style="text-align: right; text-transform: uppercase; font-size: 11px;">Subtotal / ${temaNombre}:</td>
+                    <td style="text-align: center;">${subH}</td>
+                    <td style="text-align: center;">${subM}</td>
+                    <td></td>
+                    <td style="text-align: center; color: var(--dif-orange);">${subTotalGen}</td>
+                    <td></td>
+                `;
+                tbody.appendChild(trSub);
             });
 
-            let trTotal = document.createElement('tr');
-            trTotal.className = "total-row";
-            trTotal.innerHTML = `
-                <td colspan="3" style="text-align: right;">TOTAL GENERAL INSTITUCIONAL:</td>
-                <td style="text-align: center;" id="sumH">${sumaGralH}</td>
-                <td style="text-align: center;" id="sumM">${sumaGralM}</td>
+            let trTotalGral = document.createElement('tr');
+            trTotalGral.className = "total-row";
+            sumaGralTotal = sumaGralH + sumaGralM;
+            trTotalGral.innerHTML = `
+                <td colspan="3" style="text-align: right; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;">TOTAL GENERAL INSTITUCIONAL:</td>
+                <td style="text-align: center; font-size: 13px;">${sumaGralH}</td>
+                <td style="text-align: center; font-size: 13px;">${sumaGralM}</td>
                 <td></td>
-                <td style="text-align: center; color: var(--dif-orange);" id="sumTotGral">${sumaGralTotal}</td>
+                <td style="text-align: center; font-size: 13px; color: var(--dif-orange);">${sumaGralTotal}</td>
                 <td></td>
             `;
-            tbody.appendChild(trTotal);
+            tbody.appendChild(trTotalGral);
         }
 
-        function cambiarTipoConcepto(index, valor) {
-            filasDinamicas[index]['conceptoSeleccionado'] = valor;
-            if(valor === "+ Otro servicio (Escribir concepto personalizado)") {
-                filasDinamicas[index]['esCustom'] = true;
-                filasDinamicas[index]['conceptoCustomVal'] = "";
+        function cambiarConcepto(index, val) {
+            if (val === "__CUSTOM__") {
+                filasDinamicas[index].conceptoSeleccionado = "__CUSTOM__";
             } else {
-                filasDinamicas[index]['esCustom'] = false;
+                filasDinamicas[index].conceptoSeleccionado = val;
             }
             renderizarTabla();
         }
 
-        function actualizarDato(index, campo, valor) {
-            filasDinamicas[index][campo] = valor;
-            if (campo === 'hombre' || campo === 'mujer') {
-                let f = filasDinamicas[index];
-                let rowTot = f.hombre + f.mujer;
-                let totEl = document.getElementById(`tot_${index}`);
-                if (totEl) totEl.textContent = rowTot;
-                recalcularTotalesEnDOM();
-            }
+        function actualizarCustomConcepto(index, val) {
+            filasDinamicas[index].conceptoSeleccionado = val;
         }
 
-        function recalcularTotalesEnDOM() {
-            let temasUnicos = Object.keys(catalogoConceptos);
-            let sumaGralH = 0, sumaGralM = 0, sumaGralTotal = 0;
-
-            temasUnicos.forEach((temaNombre, tIndex) => {
-                let filasDelTema = filasDinamicas.map((f, idx) => ({f, idx})).filter(item => item.f.tema === temaNombre);
-                let temaH = 0, temaM = 0, temaTot = 0;
-
-                filasDelTema.forEach(item => {
-                    let f = item.f;
-                    temaH += f.hombre;
-                    temaM += f.mujer;
-                    temaTot += (f.hombre + f.mujer);
-                });
-
-                let subHEl = document.getElementById(`subH_t${tIndex}`);
-                let subMEl = document.getElementById(`subM_t${tIndex}`);
-                let subTotEl = document.getElementById(`subTot_t${tIndex}`);
-
-                if (subHEl) subHEl.textContent = temaH;
-                if (subMEl) subMEl.textContent = temaM;
-                if (subTotEl) subTotEl.textContent = temaTot;
-
-                sumaGralH += temaH;
-                sumaGralM += temaM;
-                sumaGralTotal += temaTot;
-            });
-
-            let sumHEl = document.getElementById('sumH');
-            let sumMEl = document.getElementById('sumM');
-            let sumTotGralEl = document.getElementById('sumTotGral');
-
-            if (sumHEl) sumHEl.textContent = sumaGralH;
-            if (sumMEl) sumMEl.textContent = sumaGralM;
-            if (sumTotGralEl) sumTotGralEl.textContent = sumaGralTotal;
+        function actualizarValor(index, campo, val) {
+            if (campo === 'hombre') filasDinamicas[index].hombre = val;
+            if (campo === 'mujer') filasDinamicas[index].mujer = val;
+            if (campo === 'obs') filasDinamicas[index].obs = val;
         }
 
         function limpiarFormulario() {
-            if (confirm("¿Desea vaciar todos los registros para iniciar de nuevo?")) {
+            if(confirm("¿Desea limpiar todos los registros capturados?")) {
                 inicializarTabla();
             }
         }
@@ -689,30 +679,20 @@
             let centro = document.getElementById('selectCentro').value;
             let mes = document.getElementById('selectMes').value;
             
-            // Reemplazar selectores y inputs personalizados por su texto plano para el reporte de Excel
-            let tablaClon = document.getElementById('reportTable').cloneNode(true);
+            let htmlTabla = document.getElementById('reportTable').outerHTML;
             
-            let filasClon = tablaClon.querySelectorAll('tbody tr');
-            let indexFilaData = 0;
+            let blob = new Blob([
+                '<meta charset="UTF-8">',
+                '<h3>Reporte Institucional - GCAPAM</h3>',
+                '<p><b>Centro:</b> ' + centro + '</p>',
+                '<p><b>Mes de Reporte:</b> ' + mes + '</p>',
+                htmlTabla
+            ], { type: 'application/vnd.ms-excel;charset=utf-8;' });
 
-            // Recorremos y limpiamos inputs para exportación limpia en Excel
-            filasDinamicas.forEach((f, idx) => {
-                // localizamos la fila correspondiente en la tabla clonada si no es subtotal/total
-            });
-
-            let html = tablaClon.outerHTML;
-            
-            let blob = new Blob(['\ufeff' + `<html><head><meta charset="utf-8"><title>Reporte Mensual</title></head><body><h3>GCAPAM - Hoja de Registro y Control</h3><p><b>Centro:</b> ${centro} <br><b>Mes Reportado:</b> ${mes}</p>` + html + '</body></html>'], {
-                type: 'application/vnd.ms-excel'
-            });
-            
-            let url = URL.createObjectURL(blob);
-            let a = document.createElement('a');
-            a.href = url;
-            a.download = `Hoja_Registro_${centro.substring(0, 15).trim().replace(/[\s\(\)\/]+/g, '_')}_${mes}.xls`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Reporte_${centro.replace(/[^a-zA-Z0-9]/g, '_')}_${mes}.xls`;
+            link.click();
         }
     </script>
 </body>
