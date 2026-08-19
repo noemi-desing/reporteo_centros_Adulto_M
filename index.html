@@ -11,7 +11,7 @@
     <style>
         :root {
             --dif-orange: #f37021;
-            --dif-dark: #2b3a4a;
+            --dif-gray: #5a6578; /* Gris institucional del DIF */
             --dif-light: #f8fafc;
             --border-color: #cbd5e1;
             --text-color: #334155;
@@ -23,13 +23,13 @@
         /* Pantalla de Acceso */
         #loginScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(43, 58, 74, 0.95); display: flex; justify-content: center; align-items: center; z-index: 9999;
+            background: rgba(90, 101, 120, 0.95); display: flex; justify-content: center; align-items: center; z-index: 9999;
         }
         .login-card {
             background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             text-align: center; width: 90%; max-width: 400px; border-top: 5px solid var(--dif-orange);
         }
-        .login-card h2 { font-family: 'Montserrat', sans-serif; color: var(--dif-dark); margin-bottom: 10px; font-size: 22px; }
+        .login-card h2 { font-family: 'Montserrat', sans-serif; color: var(--dif-gray); margin-bottom: 10px; font-size: 22px; }
         .login-card p { font-size: 14px; color: #6b7280; margin-bottom: 20px; }
         .login-card input {
             width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
@@ -44,14 +44,14 @@
             display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;
         }
         .logo-area img { height: 55px; object-fit: contain; }
-        .header-titles h1 { font-family: 'Montserrat', sans-serif; font-size: 17px; color: var(--dif-dark); font-weight: 700; }
+        .header-titles h1 { font-family: 'Montserrat', sans-serif; font-size: 17px; color: var(--dif-gray); font-weight: 700; }
         .header-titles p { font-size: 12px; color: var(--dif-orange); font-weight: 600; }
 
         .container { width: 95%; max-width: 1350px; margin: 30px auto; }
         
         .card { background: #ffffff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid var(--border-color); margin-bottom: 30px; overflow: hidden; }
         .card-header { padding: 20px 25px; background: #ffffff; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .card-header h2 { font-family: 'Montserrat', sans-serif; font-size: 15px; color: var(--dif-dark); display: flex; align-items: center; gap: 10px; }
+        .card-header h2 { font-family: 'Montserrat', sans-serif; font-size: 15px; color: var(--dif-gray); display: flex; align-items: center; gap: 10px; }
         .card-header h2 i { color: var(--dif-orange); }
 
         .btn { padding: 10px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
@@ -63,7 +63,7 @@
         .btn-danger:hover { background-color: #dc2626; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 25px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--dif-dark); margin-bottom: 8px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--dif-gray); margin-bottom: 8px; }
         .form-group select {
             width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none; background: #fff;
         }
@@ -71,7 +71,7 @@
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th, td { padding: 12px 15px; border: 1px solid var(--border-color); font-size: 13px; }
-        th { background-color: var(--dif-dark); color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 12px; text-transform: uppercase; text-align: center; }
+        th { background-color: var(--dif-gray); color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 12px; text-transform: uppercase; text-align: center; }
         tr:hover { background-color: #f8fafc; }
         
         .select-concepto {
@@ -84,7 +84,7 @@
         }
         .input-number:focus { border-color: var(--dif-orange); outline: none; }
         
-        .total-row { background-color: #fff7ed !important; font-weight: 700; color: var(--dif-dark); border-top: 2px solid var(--dif-orange); }
+        .total-row { background-color: #fff7ed !important; font-weight: 700; color: var(--dif-gray); border-top: 2px solid var(--dif-orange); }
         .action-bar { padding: 20px 25px; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap; }
 
         .app-content { display: none; }
@@ -171,7 +171,7 @@
                             </tr>
                         </thead>
                         <tbody id="tableBody">
-                            <!-- Filas dinámicas generadas estrictamente según la estructura solicitada -->
+                            <!-- Filas dinámicas generadas -->
                         </tbody>
                     </table>
                 </div>
@@ -197,7 +197,7 @@
             }
         }
 
-        // Datos oficiales basados exactamente en tu tabla institucional
+        // Estructura oficial con temas y subtemas institucionales
         const estructuraReporte = [
             {
                 tema: "Población Atendida y Totales del Periodo",
@@ -209,7 +209,7 @@
             },
             {
                 tema: "Servicio Médico y Transporte",
-                conceptos: ["Consultas médicas y orientación médica", "Tomar y monitoreo de signos vitales (TA, FC, Glucemia Capilar)", "Inyecciones, IM, Subcutánea y aplicación de medicamentos", "Curaciones y manejo de heridas / lesiones", "Actividades de la Vida Diaria (AVD) / Acompañamiento en movilidad", "Coordinación y control de higiene personal", "Baño asistido para usuarios con requerimiento de movilidad o sillas", "Áseo bucal y aseo general o cuidado de prótesis dentales", "Preparación y repuestos de dentaduras posturas / prótesis dentales", "Lavado y desinfección de ropa, sábanas y blancos del centro", "Colocación y/o retiro de sondas foley", "Cálculo y monitoreo nutricional de consumo de agua, calórica y macronutrientes", "Atención a defunciones y trámites", "Fisioterapia y Rehabilitación Física", "Psicología", "Reumatología", "Medicina Integrativa y Terapias Alternativas (Acupuntura, Acupresión, Biomagnetismo y Electroacupuntura)", "Evaluación psicométrica, diagnósticos y apoyo psicológico", "Transporte accesible para traslados médicos o comunitarios", "Gestión de apoyos y programas para adultos mayores (vales de leche, despensas, pañales y trámite de documentos gubernamentales)"]
+                conceptos: ["Consultas médicas y orientación médica", "Tomar y monitoreo de signos vitales (TA, FC, Glucemia Capilar)", "Inyecciones, IM, Subcutánea y aplicación de medicamentos", "Curaciones y manejo de heridas / lesiones", "Actividades de la Vida Diaria (AVD) / Acompañamiento en movilidad", "Coordinación y control de higiene personal", "Baño asistido para usuarios con requerimiento de movilidad o sillas", "Áseo bucal y aseo general o cuidado de prótesis dentales", "Preparación y repuestos de dentaduras posturas / prótesis dentales", "Lavado y desinfección de ropa, sábanas y blancos del centro", "Colocación y/o retiro de sondas foley", "Cálculo y monitoreo nutricional de consumo de agua, calórica y macronutrientes", "Atención a defunciones y trámites", "Fisioterapia y Rehabilitación Física", "Psicología", "Reumatología", "Medicina Integrativa y Terapias Alternativas", "Evaluación psicométrica, diagnósticos y apoyo psicológico", "Transporte accesible para traslados médicos o comunitarios", "Gestión de apoyos y programas para adultos mayores"]
             },
             {
                 tema: "Psicología",
@@ -217,7 +217,7 @@
             },
             {
                 tema: "Apoyo Social y Comunitario",
-                conceptos: ["Asistencia social y integración comunitaria", "Trabajo Social (Estudios socioeconómicos, visitas domiciliarias y gestiones)", "Gestión de apoyos gubernamentales, civiles y jurídicos externos", "Gestión e interrelación institucional y vinculación con médicos o especialistas", "Servicios de atención de puerta o entrega de despensas o ayudas alimentarias", "Apoyo alimentario extraordinario o social en red"]
+                conceptos: ["Asistencia social y integración comunitaria", "Trabajo Social (Estudios socioeconómicos y visitas domiciliarias)", "Gestión de apoyos gubernamentales, civiles y jurídicos externos", "Gestión e interrelación institucional y vinculación con médicos o especialistas", "Servicios de atención de puerta o entrega de despensas", "Apoyo alimentario extraordinario o social en red"]
             },
             {
                 tema: "Apoyo Alimentario",
@@ -229,7 +229,7 @@
             },
             {
                 tema: "Envejecimiento Activo",
-                conceptos: ["Uso y manejo de teléfonos, computadoras y tabletas (Tecnologías digitales y redes sociales)", "Talleres de memoria y estimulación cognitiva para adultos mayores", "Voluntariado juvenil y escolar para adultos mayores", "Ferias de salud y activaciones físicas y deportivas", "Convivios y encuentros intergeneracionales"]
+                conceptos: ["Uso y manejo de teléfonos, computadoras y tabletas (Tecnologías digitales)", "Talleres de memoria y estimulación cognitiva para adultos mayores", "Voluntariado juvenil y escolar para adultos mayores", "Ferias de salud y activaciones físicas y deportivas", "Convivios y encuentros intergeneracionales"]
             },
             {
                 tema: "Eventos",
@@ -237,7 +237,7 @@
             },
             {
                 tema: "Jurídico",
-                conceptos: ["Asesoría y trámite de testamentos y sucesiones", "Atención y defensa en prevención del maltrato y abandono al adulto mayor", "Orientación jurídica en trámites de pensión alimenticia, divorcio y testamentos", "Gestión y tramitación de voluntades anticipadas"]
+                conceptos: ["Asesoría y trámite de testamentos y sucesiones", "Atención y defensa en prevención del maltrato y abandono al adulto mayor", "Orientación jurídica en trámites de pensión alimenticia y divorcio", "Gestión y tramitación de voluntades anticipadas"]
             },
             {
                 tema: "Otros",
@@ -249,12 +249,12 @@
             let tbody = document.getElementById('tableBody');
             tbody.innerHTML = "";
 
-            estructuraReporteforEach((grupo, gIndex) => {
+            estructuraReporte.forEach((grupo, gIndex) => {
                 grupo.conceptos.forEach((conceptoItem, cIndex) => {
                     let tr = document.createElement('tr');
                     
-                    // Columna 1: Tema Principal (solo aparece en la primera fila de cada grupo o con rowspan limpio)
-                    let colTema = (cIndex === 0) ? `<td rowspan="${grupo.conceptos.length}" style="background-color: #f1f5f9; font-weight: 700; vertical-align: middle; color: var(--dif-dark);">${grupo.tema}</td>` : '';
+                    // Columna 1: Tema Principal (con rowspan para abarcar sus subtemas)
+                    let colTema = (cIndex === 0) ? `<td rowspan="${grupo.conceptos.length}" style="background-color: #f1f5f9; font-weight: 700; vertical-align: middle; color: var(--dif-gray);">${grupo.tema}</td>` : '';
 
                     // Columna 2: Lista desplegable con los conceptos del tema correspondiente
                     let optionsHtml = grupo.conceptos.map(c => `<option value="${c}" ${c === conceptoItem ? 'selected' : ''}>${c}</option>`).join('');
