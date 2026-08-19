@@ -163,7 +163,7 @@
             <section class="card">
                 <div class="card-header">
                     <h2><i class="fa-solid fa-file-excel"></i> Hoja de Registro y Control Institucional</h2>
-                    <span id="lblEstado" style="font-size: 12px; font-weight: 600; color: #10b981;"><i class="fa-solid fa-circle-check"></i> Dinámico (Agregue conceptos según necesite)</span>
+                    <span id="lblEstado" style="font-size: 12px; font-weight: 600; color: #10b981;"><i class="fa-solid fa-circle-check"></i> Conceptos independientes por celda (Agregue filas ilimitadas)</span>
                 </div>
                 <div class="table-responsive">
                     <table id="reportTable">
@@ -171,7 +171,7 @@
                             <tr>
                                 <th style="width: 18%;">Tema Principal</th>
                                 <th style="width: 18%;">Subtema</th>
-                                <th style="width: 26%;">Concepto (Lista Desplegable - 1 por celda)</th>
+                                <th style="width: 26%;">Concepto Independiente (Lista Desplegable)</th>
                                 <th style="width: 7%; background: #374151;">Hombre</th>
                                 <th style="width: 7%; background: #475161;">Mujer</th>
                                 <th style="width: 14%;">Observaciones</th>
@@ -206,108 +206,115 @@
             }
         }
 
-        // Estructura base con listas de opciones unitarias por celda
+        // Catálogo completo con opciones estrictamente unitarias (1 concepto por opción)
         const catalogoConceptos = {
             "Población Atendida": {
                 subtema: "Control de Población",
                 opciones: [
-                    "Población Atendida (Mes anterior, Altas, Bajas, Subtotal de residentes)",
-                    "Total de Servicios / Sesiones / Asistencias generales del periodo",
-                    "Promedio diario de atención a residentes"
+                    "Población atendida mes anterior",
+                    "Altas del periodo",
+                    "Bajas del periodo",
+                    "Subtotal de residentes activos",
+                    "Total de servicios generales del periodo",
+                    "Promedio diario de atención"
                 ]
             },
-            "Raciones": {
+            "Raciones Alimentarias": {
                 subtema: "Alimentación",
                 opciones: [
-                    "Raciones Alimentarias y Comidas servidas diarias",
-                    "Dotación de desayunos y Cenas calientes",
-                    "Colaciones y suplementos alimenticios especiales"
+                    "Desayunos servidos",
+                    "Comidas servidas",
+                    "Cenas servidas",
+                    "Colaciones y suplementos alimenticios"
                 ]
             },
-            "Servicio medico": {
+            "Servicio Médico": {
                 subtema: "Atención Médica",
                 opciones: [
-                    "Consultas",
-                    "Enfermería",
-                    "Cuidados Diarios, Asistencia e Higiene",
-                    "Rehabilitación y Terapia Física",
-                    "Podología",
-                    "Gerontología",
-                    "Medicinas Integrativas y Terapias Alternativas"
+                    "Consultas médicas generales",
+                    "Consultas de enfermería",
+                    "Cuidados diarios, asistencia e higiene",
+                    "Rehabilitación y terapia física",
+                    "Consultas de podología",
+                    "Consultas de gerontología",
+                    "Terapias alternativas y medicinas integrativas"
                 ]
             },
             "Psicología": {
                 subtema: "Salud Mental",
                 opciones: [
-                    "Evaluación psicométrica y diagnóstico psicológico",
-                    "Psicoterapia individual y familiar",
-                    "Intervención en crisis y procesos de duelo"
+                    "Evaluación psicométrica y diagnósticos",
+                    "Psicoterapia individual",
+                    "Psicoterapia familiar",
+                    "Intervención en crisis y manejo de duelo"
                 ]
             },
-            "Accesibilidad y transporte": {
+            "Accesibilidad y Transporte": {
                 subtema: "Movilidad",
                 opciones: [
-                    "Traslado adaptado para citas y consultas médicas externas",
+                    "Traslados adaptados para citas médicas",
                     "Gestión de rutas y movilidad institucional"
                 ]
             },
-            "Apoyos asistenciales": {
-                subtema: "Trabajo Social",
+            "Trabajo Social": {
+                subtema: "Apoyos Asistenciales",
                 opciones: [
-                    "Trabajo social",
-                    "Estudios socioeconómicos y visitas domiciliarias",
-                    "Gestión de apoyos asistenciales directos"
+                    "Estudios socioeconómicos",
+                    "Visitas domiciliarias",
+                    "Gestión de apoyos asistenciales directos",
+                    "Entrevistas de trabajo social"
                 ]
             },
-            "Capacitacion talleres y platicas": {
-                subtema: "Talleres",
+            "Capacitación, Talleres y Pláticas": {
+                subtema: "Talleres y Fomento",
                 opciones: [
-                    "Culturales",
-                    "Deportivo",
-                    "De salud",
-                    "Ocupacionales",
-                    "Formativas",
-                    "Recreativas",
-                    "Tecnología"
+                    "Talleres culturales",
+                    "Talleres deportivos",
+                    "Talleres de salud y bienestar",
+                    "Talleres ocupacionales y manualidades",
+                    "Pláticas formativas",
+                    "Actividades recreativas",
+                    "Talleres de tecnología y computación"
                 ]
             },
-            "Encuentros intergeneracionales": {
-                subtema: "Encuentros intergeneracionales",
+            "Encuentros Intergeneracionales": {
+                subtema: "Encuentros",
                 opciones: [
                     "Encuentros intergeneracionales",
-                    "Actividades con voluntarios y escuelas"
+                    "Actividades conjuntas con escuelas y voluntarios"
                 ]
             },
             "Eventos": {
-                subtema: "Eventos",
+                subtema: "Eventos Especiales",
                 opciones: [
-                    "Eventos",
-                    "Festivales y conmemoraciones especiales"
+                    "Festivales y conmemoraciones",
+                    "Eventos socioculturales internos"
                 ]
             },
-            "Juridico": {
-                subtema: "Juridico",
+            "Jurídico": {
+                subtema: "Servicios Legales",
                 opciones: [
-                    "Juridico",
-                    "Asesoría legal y testamentos"
+                    "Asesoría legal especializada",
+                    "Gestión y acompañamiento en testamentos",
+                    "Trámites jurídicos extraordinarios"
                 ]
             },
             "Otros": {
-                subtema: "Otros",
+                subtema: "Otros Servicios",
                 opciones: [
-                    "Otros",
-                    "Trámites y gestiones extraordinarias"
+                    "Trámites y gestiones diversas",
+                    "Servicios extraordinarios no clasificados"
                 ]
             }
         };
 
-        // Estado inicial de las filas del reporte (1 fila por defecto para cada tema)
+        // Estado inicial de las filas del reporte
         let filasDinamicas = [];
 
         function inicializarTabla() {
             filasDinamicas = [];
             Object.keys(catalogoConceptos).forEach(tema => {
-                // Agregar al menos 1 concepto por defecto al iniciar
+                // Iniciar con 1 fila por defecto para cada tema
                 filasDinamicas.push({
                     tema: tema,
                     subtema: catalogoConceptos[tema].subtema,
@@ -346,9 +353,7 @@
             let tbody = document.getElementById('tableBody');
             tbody.innerHTML = "";
             
-            // Agrupar filas dinámicas por Tema para calcular spans y subtotales correctos
             let temasUnicos = Object.keys(catalogoConceptos);
-            let globalRowIndex = 0;
             let sumaGralH = 0, sumaGralM = 0, sumaGralTotal = 0;
 
             temasUnicos.forEach((temaNombre, tIndex) => {
@@ -366,7 +371,7 @@
                         let colTema = (cIndex === 0) ? `<td rowspan="${cantidadFilas + 1}" style="background-color: #f1f5f9; font-weight: 700; vertical-align: middle; color: var(--dif-gray);">${temaNombre}<br><br><button class="btn btn-primary btn-sm" onclick="agregarFila('${temaNombre}')" title="Agregar concepto a este tema"><i class="fa-solid fa-plus"></i> Agregar Concepto</button></td>` : '';
                         let colSubtema = (cIndex === 0) ? `<td rowspan="${cantidadFilas}" style="background-color: #f8fafc; font-weight: 600; vertical-align: middle; color: #475569;">${f.subtema}</td>` : '';
 
-                        // Menú desplegable unitario (un concepto por celda)
+                        // Menú desplegable estrictamente unitario (1 concepto por opción)
                         let opcionesHtml = catalogoConceptos[temaNombre].opciones.map(opt => `<option value="${opt}" ${opt === f.conceptoSeleccionado ? 'selected' : ''}>${opt}</option>`).join('');
 
                         let rowTot = f.hombre + f.mujer;
@@ -385,7 +390,6 @@
                             <td style="text-align: center;"><button class="btn btn-secondary-gray btn-sm" onclick="eliminarFila(${realIdx})" title="Eliminar fila"><i class="fa-solid fa-trash"></i></button></td>
                         `;
                         tbody.appendChild(tr);
-                        globalRowIndex++;
                     });
 
                     // Fila de Subtotal del Tema
@@ -405,7 +409,6 @@
                     sumaGralM += temaM;
                     sumaGralTotal += temaTot;
                 } else {
-                    // Si el usuario eliminó todas las filas de un tema temporalmente, mostramos al menos el botón para agregar
                     let trEmpty = document.createElement('tr');
                     trEmpty.innerHTML = `
                         <td style="background-color: #f1f5f9; font-weight: 700; color: var(--dif-gray);">${temaNombre}<br><button class="btn btn-primary btn-sm" onclick="agregarFila('${temaNombre}')"><i class="fa-solid fa-plus"></i> Agregar Concepto</button></td>
@@ -432,17 +435,16 @@
 
         function actualizarDato(index, campo, valor) {
             filasDinamicas[index][campo] = valor;
-            // Actualizar solo el total de la fila afectada y subtotales en tiempo real sin redibujar todo para no perder foco
             if (campo === 'hombre' || campo === 'mujer') {
                 let f = filasDinamicas[index];
                 let rowTot = f.hombre + f.mujer;
                 let totEl = document.getElementById(`tot_${index}`);
                 if (totEl) totEl.textContent = rowTot;
-                recalcularTotalesTotalesEnDOM();
+                recalcularTotalesEnDOM();
             }
         }
 
-        function recalcularTotalesTotalesEnDOM() {
+        function recalcularTotalesEnDOM() {
             let temasUnicos = Object.keys(catalogoConceptos);
             let sumaGralH = 0, sumaGralM = 0, sumaGralTotal = 0;
 
