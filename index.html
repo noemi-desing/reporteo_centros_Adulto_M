@@ -163,7 +163,7 @@
             <section class="card">
                 <div class="card-header">
                     <h2><i class="fa-solid fa-file-excel"></i> Hoja de Registro y Control Institucional</h2>
-                    <span id="lblEstado" style="font-size: 12px; font-weight: 600; color: #10b981;"><i class="fa-solid fa-circle-check"></i> Conceptos independientes por celda (Agregue filas ilimitadas)</span>
+                    <span id="lblEstado" style="font-size: 12px; font-weight: 600; color: #10b981;"><i class="fa-solid fa-circle-check"></i> Catálogo Completo y Dinámico (Agregue filas ilimitadas)</span>
                 </div>
                 <div class="table-responsive">
                     <table id="reportTable">
@@ -206,7 +206,7 @@
             }
         }
 
-        // Catálogo completo con opciones estrictamente unitarias (1 concepto por opción)
+        // Catálogo completo con todos los conceptos individuales requeridos por temática
         const catalogoConceptos = {
             "Población Atendida": {
                 subtema: "Control de Población",
@@ -308,13 +308,11 @@
             }
         };
 
-        // Estado inicial de las filas del reporte
         let filasDinamicas = [];
 
         function inicializarTabla() {
             filasDinamicas = [];
             Object.keys(catalogoConceptos).forEach(tema => {
-                // Iniciar con 1 fila por defecto para cada tema
                 filasDinamicas.push({
                     tema: tema,
                     subtema: catalogoConceptos[tema].subtema,
@@ -371,7 +369,6 @@
                         let colTema = (cIndex === 0) ? `<td rowspan="${cantidadFilas + 1}" style="background-color: #f1f5f9; font-weight: 700; vertical-align: middle; color: var(--dif-gray);">${temaNombre}<br><br><button class="btn btn-primary btn-sm" onclick="agregarFila('${temaNombre}')" title="Agregar concepto a este tema"><i class="fa-solid fa-plus"></i> Agregar Concepto</button></td>` : '';
                         let colSubtema = (cIndex === 0) ? `<td rowspan="${cantidadFilas}" style="background-color: #f8fafc; font-weight: 600; vertical-align: middle; color: #475569;">${f.subtema}</td>` : '';
 
-                        // Menú desplegable estrictamente unitario (1 concepto por opción)
                         let opcionesHtml = catalogoConceptos[temaNombre].opciones.map(opt => `<option value="${opt}" ${opt === f.conceptoSeleccionado ? 'selected' : ''}>${opt}</option>`).join('');
 
                         let rowTot = f.hombre + f.mujer;
@@ -383,8 +380,8 @@
                             ${colTema}
                             ${colSubtema}
                             <td><select class="select-concepto" onchange="actualizarDato(${realIdx}, 'conceptoSeleccionado', this.value)">${opcionesHtml}</select></td>
-                            <td style="text-align: center;"><input type="number" class="input-number" value="${f.hombre}" min="0" oninput="actualizarDato(${realIdx}, 'hombre', parseInt(this.value)||0)" id="h_${realIdx}"></td>
-                            <td style="text-align: center;"><input type="number" class="input-number" value="${f.mujer}" min="0" oninput="actualizarDato(${realIdx}, 'mujer', parseInt(this.value)||0)" id="m_${realIdx}"></td>
+                            <td style="text-align: center;"><input type="number" class="input-number" value="${f.hombre}" min="0" oninput="actualizarDato(${realIdx}, 'hombre', parseInt(this.value)||0)"></td>
+                            <td style="text-align: center;"><input type="number" class="input-number" value="${f.mujer}" min="0" oninput="actualizarDato(${realIdx}, 'mujer', parseInt(this.value)||0)"></td>
                             <td><input type="text" class="input-obs" value="${f.obs}" oninput="actualizarDato(${realIdx}, 'obs', this.value)" placeholder="Detalle..."></td>
                             <td style="text-align: center;"><strong id="tot_${realIdx}" style="color: var(--dif-orange);">${rowTot}</strong></td>
                             <td style="text-align: center;"><button class="btn btn-secondary-gray btn-sm" onclick="eliminarFila(${realIdx})" title="Eliminar fila"><i class="fa-solid fa-trash"></i></button></td>
@@ -392,7 +389,6 @@
                         tbody.appendChild(tr);
                     });
 
-                    // Fila de Subtotal del Tema
                     let trSub = document.createElement('tr');
                     trSub.className = "tema-subtotal-row";
                     trSub.innerHTML = `
@@ -419,7 +415,6 @@
                 }
             });
 
-            // Fila de Total General Institucional
             let trTotal = document.createElement('tr');
             trTotal.className = "total-row";
             trTotal.innerHTML = `
