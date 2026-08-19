@@ -75,10 +75,10 @@
         th { background-color: var(--dif-gray); color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 11px; text-transform: uppercase; text-align: center; }
         tr:hover { background-color: #f8fafc; }
         
-        .select-concepto {
-            width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: #fff; outline: none; font-weight: 600; color: var(--dif-gray); cursor: pointer;
+        .select-concepto, .input-custom-concepto {
+            width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: #fff; outline: none; font-weight: 600; color: var(--dif-gray);
         }
-        .select-concepto:focus { border-color: var(--dif-orange); background: #fff7ed; }
+        .select-concepto:focus, .input-custom-concepto:focus { border-color: var(--dif-orange); background: #fff7ed; }
 
         .input-number {
             width: 70px; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; font-size: 12px;
@@ -171,7 +171,7 @@
                             <tr>
                                 <th style="width: 18%;">Tema Principal</th>
                                 <th style="width: 18%;">Subtema</th>
-                                <th style="width: 26%;">Concepto Independiente (Lista Desplegable)</th>
+                                <th style="width: 26%;">Concepto Independiente (Lista Desplegable o Personalizado)</th>
                                 <th style="width: 7%; background: #374151;">Hombre</th>
                                 <th style="width: 7%; background: #475161;">Mujer</th>
                                 <th style="width: 14%;">Observaciones</th>
@@ -471,6 +471,17 @@
                     "Caminata Recreativa 'Años con Vida'",
                     "Torneo Inter-centros de Cachibol y Juegos de Mesa"
                 ]
+            },
+            "Otros Servicios": {
+                subtema: "Otros",
+                opciones: [
+                    "Servicio de estética",
+                    "Otros (Reposición de tarjetones, gafets, entrega de listas de asistencias)",
+                    "Asistencias en Actividades de la Vida Diaria",
+                    "Acompañamiento en Actividades Instrumentales de la Vida Diaria",
+                    "Asistencia en actividades de la vida diaria (Cambio de pañal, Baño, Alimentación asistida, contención física, movilizaciones)",
+                    "+ Otro servicio (Escribir concepto personalizado)"
+                ]
             }
         };
 
@@ -537,6 +548,21 @@
 
                         let opcionesHtml = catalogoConceptos[temaNombre].opciones.map(opt => `<option value="${opt}" ${opt === f.conceptoSeleccionado ? 'selected' : ''}>${opt}</option>`).join('');
 
+                        let esPersonalizado = (f.conceptoSeleccionado === "+ Otro servicio (Escribir concepto personalizado)" || f.esCustom);
+                        let campoConceptoHtml = '';
+
+                        if (temaNombre === "Otros Servicios" && (f.conceptoSeleccionado === "+ Otro servicio (Escribir concepto personalizado)" || f.esCustom)) {
+                            if(!f.esCustom) { f.conceptoCustomVal = ""; f.esCustom = true; }
+                            campoConceptoHtml = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <select class="select-concepto" onchange="cambiarTipoConcepto(${realIdx}, this.value)">${opcionesHtml}</select>
+                                    <input type="text" class="input-custom-concepto" value="${f.conceptoCustomVal || ''}" placeholder="Escriba su concepto aquí..." oninput="actualizarDato(${realIdx}, 'conceptoCustomVal', this.value)">
+                                </div>`;
+                        } else {
+                            f.esCustom = false;
+                            campoConceptoHtml = `<select class="select-concepto" onchange="cambiarTipoConcepto(${realIdx}, this.value)">${opcionesHtml}</select>`;
+                        }
+
                         let rowTot = f.hombre + f.mujer;
                         temaH += f.hombre;
                         temaM += f.mujer;
@@ -545,7 +571,7 @@
                         tr.innerHTML = `
                             ${colTema}
                             ${colSubtema}
-                            <td><select class="select-concepto" onchange="actualizarDato(${realIdx}, 'conceptoSeleccionado', this.value)">${opcionesHtml}</select></td>
+                            <td>${campoConceptoHtml}</td>
                             <td style="text-align: center;"><input type="number" class="input-number" value="${f.hombre}" min="0" oninput="actualizarDato(${realIdx}, 'hombre', parseInt(this.value)||0)"></td>
                             <td style="text-align: center;"><input type="number" class="input-number" value="${f.mujer}" min="0" oninput="actualizarDato(${realIdx}, 'mujer', parseInt(this.value)||0)"></td>
                             <td><input type="text" class="input-obs" value="${f.obs}" oninput="actualizarDato(${realIdx}, 'obs', this.value)" placeholder="Detalle..."></td>
@@ -592,6 +618,17 @@
                 <td></td>
             `;
             tbody.appendChild(trTotal);
+        }
+
+        function cambiarTipoConcepto(index, valor) {
+            filasDinamicas[index]['conceptoSeleccionado'] = valor;
+            if(valor === "+ Otro servicio (Escribir concepto personalizado)") {
+                filasDinamicas[index]['esCustom'] = true;
+                filasDinamicas[index]['conceptoCustomVal'] = "";
+            } else {
+                filasDinamicas[index]['esCustom'] = false;
+            }
+            renderizarTabla();
         }
 
         function actualizarDato(index, campo, valor) {
@@ -651,8 +688,19 @@
         function exportToExcel() {
             let centro = document.getElementById('selectCentro').value;
             let mes = document.getElementById('selectMes').value;
-            let table = document.getElementById('reportTable');
-            let html = table.outerHTML;
+            
+            // Reemplazar selectores y inputs personalizados por su texto plano para el reporte de Excel
+            let tablaClon = document.getElementById('reportTable').cloneNode(true);
+            
+            let filasClon = tablaClon.querySelectorAll('tbody tr');
+            let indexFilaData = 0;
+
+            // Recorremos y limpiamos inputs para exportación limpia en Excel
+            filasDinamicas.forEach((f, idx) => {
+                // localizamos la fila correspondiente en la tabla clonada si no es subtotal/total
+            });
+
+            let html = tablaClon.outerHTML;
             
             let blob = new Blob(['\ufeff' + `<html><head><meta charset="utf-8"><title>Reporte Mensual</title></head><body><h3>GCAPAM - Hoja de Registro y Control</h3><p><b>Centro:</b> ${centro} <br><b>Mes Reportado:</b> ${mes}</p>` + html + '</body></html>'], {
                 type: 'application/vnd.ms-excel'
