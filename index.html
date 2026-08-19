@@ -206,104 +206,255 @@
             }
         }
 
-        // Catálogo completo con todos los conceptos individuales requeridos por temática
         const catalogoConceptos = {
             "Población Atendida": {
-                subtema: "Control de Población",
+                subtema: "Población Atendida y Totales",
                 opciones: [
-                    "Población atendida mes anterior",
-                    "Altas del periodo",
-                    "Bajas del periodo",
-                    "Subtotal de residentes activos",
-                    "Total de servicios generales del periodo",
-                    "Promedio diario de atención"
+                    "Mes anterior",
+                    "Altas del mes",
+                    "Bajas del mes",
+                    "Subtotal de residentes",
+                    "Total de Servicios / Sesiones / Asistencias generales del periodo"
                 ]
             },
             "Raciones Alimentarias": {
-                subtema: "Alimentación",
+                subtema: "Raciones",
                 opciones: [
-                    "Desayunos servidos",
-                    "Comidas servidas",
-                    "Cenas servidas",
-                    "Colaciones y suplementos alimenticios"
+                    "Colaciones Matutinas",
+                    "Comidas",
+                    "Colaciones Vespertinas",
+                    "Cenas"
                 ]
             },
-            "Servicio Médico": {
-                subtema: "Atención Médica",
+            "Servicios de Salud": {
+                subtema: "Salud Integral",
                 opciones: [
-                    "Consultas médicas generales",
-                    "Consultas de enfermería",
-                    "Cuidados diarios, asistencia e higiene",
-                    "Rehabilitación y terapia física",
-                    "Consultas de podología",
-                    "Consultas de gerontología",
-                    "Terapias alternativas y medicinas integrativas"
+                    "Consultas médicas y orientación médica",
+                    "Valoraciones médicas (de ingreso e integrales)",
+                    "Expedición y actualización de indicaciones terapéuticas",
+                    "Atenciones de urgencias y emergencias médicas",
+                    "Elaboración y actualización de historia clínica geriátrica",
+                    "Campañas de tamizaje y detección temprana",
+                    "Esquema y aplicación de vacunación geriátrica",
+                    "Emitir o actualizar certificados médicos de salud",
+                    "Electrocardiograma básico",
+                    "Gestión y coordinación de citas o interconsultas médicas externas",
+                    "Toma y monitoreo de signos vitales (TA, FC, Glucemia Capilar)",
+                    "Inyecciones I.M., Subcutánea y administración de medicamentos I.V. / V.O.",
+                    "Venoclisis e hidratación oral / suero",
+                    "Curación de heridas y vendajes",
+                    "Nebulización e inhalaciones en aerosol",
+                    "Oxigenoterapia (puntas nasales, mascarilla con/sin reservorio)",
+                    "Lavado oftálmico y aplicación de medicamentos oftálmicos",
+                    "Colocación y/o retiro de sonda Foley",
+                    "Cuidado y manejo de ostomías (gastrostomía, colostomía) y catéteres especiales",
+                    "Prevención y manejo de úlceras por presión (escaras)",
+                    "Aplicación de medios físicos y cuidados hospitalarios",
+                    "Manejo de contención física",
+                    "Conciliación y revisión periódica de polifarmacia",
+                    "Toma y envío de muestras biológicas para laboratorio",
+                    "Registro y reporte de caídas de pacientes",
+                    "Atención a defunciones",
+                    "Asistencias en Actividades de la Vida Diaria (AVD)",
+                    "Acompañamiento en Actividades Instrumentales de la Vida Diaria (AIVD)",
+                    "Cambio de pañal e higiene personal",
+                    "Baño asistido (en regadera o baño de esponja en cama)",
+                    "Aseo bucal especializado o cuidado de prótesis dentales",
+                    "Preparación para ingresos y egresos de residentes",
+                    "Valoración fisioterapéutica y funcional",
+                    "Sesión individual de rehabilitación y asesoría en rehabilitación",
+                    "Cinesiterapia (ejercicios de movilidad articular) y mecanoterapia",
+                    "Termoterapia, crioterapia y electroterapia (TENS)",
+                    "Ultrasonido terapéutico",
+                    "Reeducación del equilibrio y prevención de caídas",
+                    "Terapia del lenguaje y deglución (Logopedia)",
+                    "Entrenamiento en uso de ayudas funcionales (andador, bastón, silla de ruedas)",
+                    "Terapia ocupacional",
+                    "Corte y cuidado de uñas en pie diabético",
+                    "Tratamiento de helomas (callosidades) y durezas",
+                    "Tratamiento de onicomicosis (hongos en uñas)",
+                    "Tratamiento de onicocriptosis (uña encarnada)",
+                    "Evaluación y estudio de la pisada / marcha",
+                    "Curación de úlceras en pie diabético",
+                    "Evaluación socio-gerontológica integral",
+                    "Elaboración del plan individualizado de envejecimiento activo",
+                    "Talleres de estimulación cognitiva, memoria y agilidad mental",
+                    "Activación física adaptada y gerontogimnasia",
+                    "Grupos de apoyo emocional y acompañamiento para el adulto mayor",
+                    "Orientación y asesoría familiar sobre el proceso de envejecimiento",
+                    "Dinámicas de integración social, convivencia y participación comunitaria",
+                    "Talleres para el fomento de la autonomía e independencia",
+                    "Sesiones de ludoterapia, musicoterapia y recreación dirigida",
+                    "Asesoría en derechos del adulto mayor y prevención del maltrato / vulnerabilidad",
+                    "Evaluación y asesoría para la adaptación accesible del entorno de hogar",
+                    "Seguimiento y evaluación del plan de cuidados gerontológicos",
+                    "Capacitación y acompañamiento a cuidadores primarios",
+                    "Coordinación de redes de apoyo social e intergeneracional",
+                    "Acupuntura clínica / Acupuntura sin agujas (láser o electroestimulación)",
+                    "Reflexología podal y manual",
+                    "Masoterapia relajante y descontracturante",
+                    "Aromaterapia terapéutica",
+                    "Sesiones de Reiki y armonización energética",
+                    "Práctica de Tai Chi adaptado para el equilibrio",
+                    "Yoga adaptado en silla / Estiramientos suaves",
+                    "Ejercicios de respiración guiada y relajación neuromuscular",
+                    "Fitoterapia y asesoría en herbolaria básica",
+                    "Aplicación de ventosaterapia suave (Cupping)",
+                    "Terapia con cuencos tibetanos / Musicoterapia holística",
+                    "Hidroterapia / Pediluvios relajantes",
+                    "Terapia floral (Flores de Bach)",
+                    "Digitopuntura / auriculoterapia"
                 ]
             },
             "Psicología": {
-                subtema: "Salud Mental",
+                subtema: "Psicología",
                 opciones: [
-                    "Evaluación psicométrica y diagnósticos",
-                    "Psicoterapia individual",
-                    "Psicoterapia familiar",
-                    "Intervención en crisis y manejo de duelo"
-                ]
-            },
-            "Accesibilidad y Transporte": {
-                subtema: "Movilidad",
-                opciones: [
-                    "Traslados adaptados para citas médicas",
-                    "Gestión de rutas y movilidad institucional"
+                    "Evaluación psicométrica y diagnóstico psicológico",
+                    "Psicoterapia individual para el adulto mayor",
+                    "Psicoterapia familiar y mediación de conflictos",
+                    "Acompañamiento en procesos de duelo y pérdidas significativas",
+                    "Intervención psicológica para manejo de ansiedad y depresión",
+                    "Acompañamiento y apoyo en la adaptación al envejecimiento / jubilación",
+                    "Talleres de manejo del estrés y regulación emocional",
+                    "Apoyo psicológico y contención emocional para cuidadores primarios",
+                    "Terapia de validación para residentes con deterioro cognitivo",
+                    "Diagnóstico e intervención en trastornos del sueño (insomnio)",
+                    "Talleres de autoestima y sentido de vida en la vejez",
+                    "Detección y abordaje psicológico en casos de aislamiento o soledad no deseada",
+                    "Aplicación de pruebas neuropsicológicas complementarias"
                 ]
             },
             "Trabajo Social": {
-                subtema: "Apoyos Asistenciales",
+                subtema: "Trabajo Social",
                 opciones: [
-                    "Estudios socioeconómicos",
-                    "Visitas domiciliarias",
-                    "Gestión de apoyos asistenciales directos",
-                    "Entrevistas de trabajo social"
-                ]
-            },
-            "Capacitación, Talleres y Pláticas": {
-                subtema: "Talleres y Fomento",
-                opciones: [
-                    "Talleres culturales",
-                    "Talleres deportivos",
-                    "Talleres de salud y bienestar",
-                    "Talleres ocupacionales y manualidades",
-                    "Pláticas formativas",
-                    "Actividades recreativas",
-                    "Talleres de tecnología y computación"
-                ]
-            },
-            "Encuentros Intergeneracionales": {
-                subtema: "Encuentros",
-                opciones: [
-                    "Encuentros intergeneracionales",
-                    "Actividades conjuntas con escuelas y voluntarios"
-                ]
-            },
-            "Eventos": {
-                subtema: "Eventos Especiales",
-                opciones: [
-                    "Festivales y conmemoraciones",
-                    "Eventos socioculturales internos"
+                    "Estudio socioeconómico y diagnóstico social del usuario",
+                    "Gestión de apoyos y programas sociales gubernamentales (pensiones, becas, subsidios)",
+                    "Tramitación de documentos de identidad o actualización de expedientes legales",
+                    "Visita domiciliaria y seguimiento de la red familiar",
+                    "Canalización a instituciones médicas, jurídicas o asistenciales externas",
+                    "Gestión e intermediación para la donación de insumos (pañales, medicamentos, equipo médico)",
+                    "Atención y reporte de casos de abandono, omisión de cuidados o vulneración de derechos",
+                    "Orientación y mediación familiar para la distribución de los cuidados",
+                    "Integración al padrón de beneficiarios del centro",
+                    "Coordinación y vinculación con voluntariado y asociaciones civiles",
+                    "Gestión de condonaciones o exenciones de cuotas de recuperación",
+                    "Seguimiento de casos tras el egreso o reincorporación comunitaria"
                 ]
             },
             "Jurídico": {
-                subtema: "Servicios Legales",
+                subtema: "Jurídico",
                 opciones: [
-                    "Asesoría legal especializada",
-                    "Gestión y acompañamiento en testamentos",
-                    "Trámites jurídicos extraordinarios"
+                    "Asesoría y trámite de testamentos y sucesiones",
+                    "Asesoría jurídica en prevención y atención del maltrato, abandono o violencia intrafamiliar",
+                    "Orientación y defensa ante despojo o controversias de propiedad e inmuebles",
+                    "Demandas y gestión de pensión alimenticia para el adulto mayor",
+                    "Trámite y regulación de voluntad anticipada",
+                    "Asesoría para juicios de interdicción y designación de tutor legal",
+                    "Rectificación y aclaración de actas del estado civil (nacimiento, matrimonio)",
+                    "Corrección y acreditación de identidad (CURP, RFC, registros extemporáneos)",
+                    "Mediación y conciliación de conflictos familiares o patrimoniales",
+                    "Asesoría legal en materia de arrendamiento, convenios de pago y usufructo",
+                    "Asesoría en reclamo o regularización de pensiones e jubilaciones (IMSS, ISSSTE)",
+                    "Canalización y representación jurídica en materia penal, civil y familiar",
+                    "Asesoría para la prevención de fraudes, extorsiones y despojos financieros"
                 ]
             },
-            "Otros": {
-                subtema: "Otros Servicios",
+            "Apoyo Social": {
+                subtema: "Apoyo Social",
                 opciones: [
-                    "Trámites y gestiones diversas",
-                    "Servicios extraordinarios no clasificados"
+                    "Apoyo social directo y entregas de despensas o insumos generales",
+                    "Gestión de programas de asistencia social extraordinaria"
+                ]
+            },
+            "Accesibilidad y Transporte": {
+                subtema: "Accesibilidad y Transporte",
+                opciones: [
+                    "Traslado adaptado para citas y consultas médicas externas",
+                    "Transporte accesible para trámites administrativos, bancarios o legales",
+                    "Traslado para actividades recreativas, culturales y paseos grupales",
+                    "Servicio de transporte de puerta a puerta (origen - destino)",
+                    "Acompañamiento por parte de personal capacitado durante el traslado",
+                    "Préstamo o asignación de ayudas técnicas para movilidad (sillas de ruedas, andadores)",
+                    "Evaluación y diagnóstico de accesibilidad en el hogar del usuario",
+                    "Asesoría para la eliminación de barreras arquitectónicas en el domicilio",
+                    "Tramitación o apoyo para credenciales y tarjetones de estacionamiento para discapacidad",
+                    "Orientación sobre el uso de redes de transporte público accesible",
+                    "Gestión de chofer / vehículo con rampa o elevador hidráulico",
+                    "Servicio de auxilio o apoyo en la movilización dentro de las instalaciones del centro"
+                ]
+            },
+            "Capacitación, Talleres y Pláticas": {
+                subtema: "Talleres y Formación",
+                opciones: [
+                    "Historia local y crónica comunitaria",
+                    "Taller de narración oral y leyendas",
+                    "Apreciación musical y audición guiada",
+                    "Exposiciones de artesanía y tradiciones populares",
+                    "Taller de poesía y literatura hispanoamericana",
+                    "Acondicionamiento físico",
+                    "Cachibol",
+                    "Gimnasia suave y activación física en silla",
+                    "Yoga, Tai Chi y Qi Gong adaptado",
+                    "Pilates",
+                    "Zumba",
+                    "Caminatas recreativas al aire libre y senderismo adaptado",
+                    "Torneos de cachibol o voleibol adaptado",
+                    "Ejercicios de flexibilidad, fuerza y equilibrio para adultos mayores",
+                    "Actividades enfocadas a la salud emocional, social y espiritual",
+                    "Estimulación Cognitiva y Sensorial",
+                    "Bienestar de la salud",
+                    "Nutrición en la vejez",
+                    "Musicoterapia",
+                    "Pláticas y actividades de nutrición e higiene postural",
+                    "Elaboración de periódico mural",
+                    "Tareas ligeras en área de cocina",
+                    "Huertos urbanos, jardinería y compostaje",
+                    "Alebrijes",
+                    "Bisutería y bisutería en hilo",
+                    "Bordado fino",
+                    "Crochet y tejido",
+                    "Manualidades y técnica en hoja natural",
+                    "Elaboración de jabones, velas y cosmética natural",
+                    "Gloflexia",
+                    "Costura, bordado, tejido y confección",
+                    "Elaboración de piñatas y manualidades de temporada",
+                    "Taller de pintura",
+                    "Cursos de alfabetización y regularización escolar",
+                    "Clases de idiomas (inglés básico, etc.)",
+                    "Talleres de derechos de los adultos mayores y cultura del buen trato",
+                    "Cursos de finanzas personales, administración y pensiones",
+                    "Charlas de desarrollo personal y gestión emocional en el retiro",
+                    "Actividades Físicas, Baile y Danzón",
+                    "Juegos de Mesa y lotería",
+                    "Encuentros Intergeneracionales",
+                    "Baile en línea y rock and roll",
+                    "Danza folclórica y ritmos latinos",
+                    "Cineforo y tardes de cineclub",
+                    "Rincón bohemio y anécdotas",
+                    "Clases de canto y karaoke",
+                    "Convivios, festejos de cumpleaños y eventos temáticos",
+                    "Excursiones, paseos recreativos y visitas turísticas",
+                    "Uso y manejo de teléfonos inteligentes y tabletas",
+                    "Manejo de aplicaciones esenciales (WhatsApp, videollamadas, redes sociales)",
+                    "Trámites en línea y uso seguro de banca digital o portales de gobierno",
+                    "Prevención de fraudes digitales, phishing y seguridad en red",
+                    "Fotografía digital y edición básica desde el celular"
+                ]
+            },
+            "Eventos": {
+                subtema: "Eventos",
+                opciones: [
+                    "Certamen 'Embajadora / Embajador de los Adultos Mayores'",
+                    "Premio al Adulto Mayor Distinguido",
+                    "Festival del Adulto Mayor",
+                    "Ferias de Salud y Bienestar Geriátrico",
+                    "Bazar y Exposición 'Emprendedores Mayores'",
+                    "Jueves de Danzón y Baile de Salón",
+                    "Tarde de Gala y Baile del Recuerdo",
+                    "Festival de la Memoria y Narración Oral",
+                    "Muestra Tradicional de Altares de Muertos y Posadas",
+                    "Caminata Recreativa 'Años con Vida'",
+                    "Torneo Inter-centros de Cachibol y Juegos de Mesa"
                 ]
             }
         };
