@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema DIF Jalisco - Módulo de Reporteo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --dif-orange: #f37021;
+            --dif-dark: #2b3a4a;
+            --dif-light: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #4b5563;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Open Sans', sans-serif; background-color: var(--dif-light); color: var(--text-color); line-height: 1.5; }
+
+        /* Pantalla de Acceso con Contraseña */
+        #loginScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(43, 58, 74, 0.95); display: flex; justify-content: center; align-items: center; z-index: 9999;
+        }
+        .login-card {
+            background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-align: center; width: 90%; max-width: 400px; border-top: 5px solid var(--dif-orange);
+        }
+        .login-card h2 { font-family: 'Montserrat', sans-serif; color: var(--dif-dark); margin-bottom: 10px; font-size: 22px; }
+        .login-card p { font-size: 14px; color: #6b7280; margin-bottom: 20px; }
+        .login-card input {
+            width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 16px; text-align: center; margin-bottom: 15px; outline: none; text-transform: uppercase;
+        }
+        .login-card input:focus { border-color: var(--dif-orange); }
+        .login-error { color: #dc2626; font-size: 13px; margin-bottom: 15px; display: none; }
+
+        /* Estilos Generales del Sistema */
+        .main-header {
+            background-color: #ffffff; border-bottom: 3px solid var(--dif-orange);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 15px 30px;
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;
+        }
+        .logo-area img { height: 50px; object-fit: contain; }
+        .header-titles h1 { font-family: 'Montserrat', sans-serif; font-size: 18px; color: var(--dif-dark); font-weight: 700; }
+        .header-titles p { font-size: 12px; color: var(--dif-orange); font-weight: 600; }
+
+        .container { width: 95%; max-width: 1300px; margin: 30px auto; }
+        
+        .card { background: #ffffff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid var(--border-color); margin-bottom: 30px; overflow: hidden; }
+        .card-header { padding: 20px 25px; background: #ffffff; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .card-header h2 { font-family: 'Montserrat', sans-serif; font-size: 16px; color: var(--dif-dark); display: flex; align-items: center; gap: 10px; }
+        .card-header h2 i { color: var(--dif-orange); }
+
+        .btn { padding: 10px 18px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
+        .btn-primary { background-color: var(--dif-orange); color: #fff; }
+        .btn-primary:hover { background-color: #d95e13; }
+        .btn-success { background-color: #10b981; color: #fff; }
+        .btn-success:hover { background-color: #059669; }
+
+        /* Formulario y Listas Desplegables */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 25px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--dif-dark); margin-bottom: 8px; }
+        .form-group select, .form-group input {
+            width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none; background: #fff;
+        }
+        .form-group select:focus, .form-group input:focus { border-color: var(--dif-orange); }
+
+        /* Tabla de Reporte con Totales Automáticos */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+        th { background-color: var(--dif-dark); color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 13px; text-transform: uppercase; }
+        tr:hover { background-color: #f8fafc; }
+        .total-row { background-color: #fff7ed !important; font-weight: 700; color: var(--dif-dark); border-top: 2px solid var(--dif-orange); }
+
+        .app-content { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- PANTALLA DE ACCESO -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <h2>DIF JALISCO</h2>
+            <p>Ingrese la contraseña institucional</p>
+            <input type="password" id="accessPassword" placeholder="Contraseña..." onkeypress="handleLoginKey(event)">
+            <div id="loginError" class="login-error">Contraseña incorrecta. Intente de nuevo.</div>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="checkPassword()">Ingresar al Sistema</button>
+        </div>
+    </div>
+
+    <!-- APLICACIÓN PRINCIPAL -->
+    <div id="appContent" class="app-content">
+        <header class="main-header">
+            <div class="logo-area">
+                <img src="https://noemi-desing.github.io/acesoriasPUB/assets/logo-dif.png" alt="DIF Jalisco" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'40\'><text x=\'0\' y=\'25\' font-size=\'20\' font-weight=\'bold\' fill=\'%23f37021\'>DIF JALISCO</text></svg>'">
+            </div>
+            <div class="header-titles">
+                <h1>Sistema de Reportes y Centros Operativos</h1>
+                <p>Dirección de Atención a Población Adulta Mayor (DJ-APAM)</p>
+            </div>
+        </header>
+
+        <main class="container">
+            <!-- Sección de Registro / Selección -->
+            <section class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-file-pen"></i> Captura de Datos Operativos</h2>
+                    <button class="btn btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Formato Excel</button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-building"></i> Seleccione el Centro:</label>
+                        <select id="selectCentro" onchange="actualizarReporte()">
+                            <option value="Centro Gerontológico Metropolitana">Centro Gerontológico Metropolitana</option>
+                            <option value="Casa Día Zapopan Norte">Casa Día Zapopan Norte</option>
+                            <option value="Estancia de Día Guadalajara Centro">Estancia de Día Guadalajara Centro</option>
+                            <option value="Centro de Atención Integral Tlaquepaque">Centro de Atención Integral Tlaquepaque</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-calendar-days"></i> Mes de Reporte:</label>
+                        <select id="selectMes">
+                            <option value="Enero">Enero</option>
+                            <option value="Febrero">Febrero</option>
+                            <option value="Marzo">Marzo</option>
+                            <option value="Abril">Abril</option>
+                            <option value="Mayo">Mayo</option>
+                            <option value="Junio">Junio</option>
+                            <option value="Julio">Julio</option>
+                            <option value="Agosto" selected>Agosto</option>
+                            <option value="Septiembre">Septiembre</option>
+                            <option value="Octubre">Octubre</option>
+                            <option value="Noviembre">Noviembre</option>
+                            <option value="Diciembre">Diciembre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-list-check"></i> Área de Servicio:</label>
+                        <select id="selectArea" onchange="actualizarReporte()">
+                            <option value="Asistencia Alimentaria">Asistencia Alimentaria</option>
+                            <option value="Trabajo Social y Jurídico">Trabajo Social y Jurídico</option>
+                            <option value="Servicios de Psicología">Servicios de Psicología</option>
+                            <option value="Actividades y Talleres">Actividades y Talleres</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tabla de Resumen con Sumas Automáticas -->
+            <section class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-table-cells"></i> Resumen Consolidado del Periodo</h2>
+                    <span id="lblCentroActual" style="font-size: 13px; font-weight: 600; color: var(--dif-orange);">Centro Gerontológico Metropolitana</span>
+                </div>
+                <div class="table-responsive">
+                    <table id="reportTable">
+                        <thead>
+                            <tr>
+                                <th>Clave / Concepto</th>
+                                <th>Descripción de Actividad / Servicio</th>
+                                <th>Registros Mes Anterior</th>
+                                <th>Altas / Nuevos</th>
+                                <th>Bajas</th>
+                                <th>Total Atendidos (Subtotal)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Los datos se generan dinámicamente o se suman automáticamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function checkPassword() {
+            let pwd = document.getElementById('accessPassword').value.trim().toUpperCase();
+            if (pwd === "CENTROS") {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appContent').style.display = 'block';
+                actualizarReporte();
+            } else {
+                let err = document.getElementById('loginError');
+                err.style.display = 'block';
+                document.getElementById('accessPassword').value = '';
+            }
+        }
+
+        function handleLoginKey(e) {
+            if (e.key === 'Enter') { checkPassword(); }
+        }
+
+        // Datos simulados dinámicos según el área seleccionada con cálculo de sumas automáticas
+        const datosAreas = {
+            "Asistencia Alimentaria": [
+                { clave: "3. DJ-APAM-01", desc: "Desayunos calientes servidos en comedor", mesAnt: 120, altas: 15, bajas: 5 },
+                { clave: "3. DJ-APAM-02", desc: "Entregas de despensas y raciones alimentarias", mesAnt: 85, altas: 10, bajas: 2 },
+                { clave: "3. DJ-APAM-03", desc: "Suplementos nutricionales especiales entregados", mesAnt: 30, altas: 4, bajas: 1 }
+            ],
+            "Trabajo Social y Jurídico": [
+                { clave: "3. DJ-APAM-04", desc: "Estudios socioeconómicos domiciliarios", mesAnt: 45, altas: 8, bajas: 3 },
+                { clave: "3. DJ-APAM-05", desc: "Asesorías jurídicas y gestión familiar", mesAnt: 25, altas: 6, bajas: 2 },
+                { clave: "3. DJ-APAM-06", desc: "Canalización a redes de apoyo institucional", mesAnt: 15, altas: 3, bajas: 1 }
+            ],
+            "Servicios de Psicología": [
+                { clave: "3. DJ-APAM-07", desc: "Sesiones de psicoterapia individual", mesAnt: 40, altas: 7, bajas: 2 },
+                { clave: "3. DJ-APAM-08", desc: "Talleres grupales de salud mental y emocional", mesAnt: 60, altas: 12, bajas: 4 }
+            ],
+            "Actividades y Talleres": [
+                { clave: "3. DJ-APAM-09", desc: "Talleres de activación física y motricidad", mesAnt: 95, altas: 14, bajas: 6 },
+                { clave: "3. DJ-APAM-10", desc: "Clases de manualidades, arte y recreación", mesAnt: 70, altas: 9, bajas: 3 },
+                { clave: "3. DJ-APAM-11", desc: "Pláticas preventivas y de desarrollo humano", mesAnt: 50, altas: 10, bajas: 2 }
+            ]
+        };
+
+        function actualizarReporte() {
+            let centro = document.getElementById('selectCentro').value;
+            let area = document.getElementById('selectArea').value;
+            document.getElementById('lblCentroActual').textContent = centro + " — " + area;
+
+            let tbody = document.getElementById('tableBody');
+            tbody.innerHTML = "";
+
+            let items = datosAreas[area] || [];
+            let sumAnt = 0, sumAltas = 0, sumBajas = 0, sumTotal = 0;
+
+            items.forEach(item => {
+                let subtotal = item.mesAnt + item.altas - item.bajas;
+                sumAnt += item.mesAnt;
+                sumAltas += item.altas;
+                sumBajas += item.bajas;
+                sumTotal += subtotal;
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.clave}</strong></td>
+                    <td>${item.desc}</td>
+                    <td>${item.mesAnt}</td>
+                    <td>${item.altas}</td>
+                    <td>${item.bajas}</td>
+                    <td><strong>${subtotal}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Fila de Suma Automática de Totales y Subtotales
+            let trTotal = document.createElement('tr');
+            trTotal.className = "total-row";
+            trTotal.innerHTML = `
+                <td colspan="2">TOTAL GENERAL DEL ÁREA</td>
+                <td>${sumAnt}</td>
+                <td>${sumAltas}</td>
+                <td>${sumBajas}</td>
+                <td>${sumTotal}</td>
+            `;
+            tbody.appendChild(trTotal);
+        }
+
+        function exportToExcel() {
+            let centro = document.getElementById('selectCentro').value;
+            let mes = document.getElementById('selectMes').value;
+            let area = document.getElementById('selectArea').value;
+            
+            let table = document.getElementById('reportTable');
+            let html = table.outerHTML;
+            
+            let blob = new Blob(['\ufeff' + `<html><head><meta charset="utf-8"><title>Reporte ${centro}</title></head><body><h3>Reporte Institucional - DIF Jalisco</h3><p><b>Centro:</b> ${centro} | <b>Mes:</b> ${mes} | <b>Área:</b> ${area}</p>` + html + '</body></html>'], {
+                type: 'application/vnd.ms-excel'
+            });
+            
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = `Reporte_${centro.replace(/\s+/g, '_')}_${mes}.xls`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>
