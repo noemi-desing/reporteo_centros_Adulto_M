@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GCAPAM - Sistema de Integración Operativa</title>
+    <title>GCAPAM - Sistema de Reporteo Institucional</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -13,8 +13,8 @@
             --dif-orange: #f37021;
             --dif-dark: #2b3a4a;
             --dif-light: #f8fafc;
-            --border-color: #e2e8f0;
-            --text-color: #4b5563;
+            --border-color: #cbd5e1;
+            --text-color: #334155;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -47,7 +47,7 @@
         .header-titles h1 { font-family: 'Montserrat', sans-serif; font-size: 17px; color: var(--dif-dark); font-weight: 700; }
         .header-titles p { font-size: 12px; color: var(--dif-orange); font-weight: 600; }
 
-        .container { width: 95%; max-width: 1300px; margin: 30px auto; }
+        .container { width: 95%; max-width: 1350px; margin: 30px auto; }
         
         .card { background: #ffffff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid var(--border-color); margin-bottom: 30px; overflow: hidden; }
         .card-header { padding: 20px 25px; background: #ffffff; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
@@ -70,12 +70,17 @@
 
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px 18px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
-        th { background-color: var(--dif-dark); color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 12px; text-transform: uppercase; }
+        th, td { padding: 12px 15px; border: 1px solid var(--border-color); font-size: 13px; }
+        th { background-color: var(--dif-dark); color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 12px; text-transform: uppercase; text-align: center; }
         tr:hover { background-color: #f8fafc; }
         
+        .select-concepto {
+            width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 13px; background: #fff; outline: none;
+        }
+        .select-concepto:focus { border-color: var(--dif-orange); }
+
         .input-number {
-            width: 95px; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; font-size: 14px;
+            width: 90px; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; font-size: 14px;
         }
         .input-number:focus { border-color: var(--dif-orange); outline: none; }
         
@@ -106,7 +111,7 @@
             </div>
             <div class="header-titles">
                 <h1>GCAPAM (Departamento de Gestión y Control de Atención a Población Adulta Mayor)</h1>
-                <p>Plataforma de Reporteo Mensual y Control Operativo por Centro</p>
+                <p>Plataforma Institucional de Reporteo Mensual por Centro</p>
             </div>
         </header>
 
@@ -147,25 +152,26 @@
                 </div>
             </section>
 
-            <!-- Formato de Captura Operativa -->
+            <!-- Formato de Captura Operativa con Temas, Subtemas y Listas Desplegables -->
             <section class="card">
                 <div class="card-header">
-                    <h2><i class="fa-solid fa-file-excel"></i> Formato de Reporte Mensual del Centro</h2>
+                    <h2><i class="fa-solid fa-file-excel"></i> Formato de Reporte Mensual por Tema y Subtema</h2>
                     <span id="lblEstado" style="font-size: 12px; font-weight: 600; color: #10b981;"><i class="fa-solid fa-circle-check"></i> Listo para captura</span>
                 </div>
                 <div class="table-responsive">
                     <table id="reportTable">
                         <thead>
                             <tr>
-                                <th style="width: 48%;">Área de Servicio / Actividad Operativa</th>
-                                <th style="width: 13%; text-align: center;">Mes Anterior</th>
-                                <th style="width: 13%; text-align: center;">Altas / Nuevos</th>
-                                <th style="width: 13%; text-align: center;">Bajas</th>
-                                <th style="width: 13%; text-align: center;">Total Atendidos</th>
+                                <th style="width: 20%;">Tema Principal</th>
+                                <th style="width: 32%;">Concepto / Subtema (Seleccione de la Lista)</th>
+                                <th style="width: 12%; text-align: center;">Mes Anterior</th>
+                                <th style="width: 12%; text-align: center;">Altas / Nuevos</th>
+                                <th style="width: 12%; text-align: center;">Bajas</th>
+                                <th style="width: 12%; text-align: center;">Total Atendidos</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody">
-                            <!-- Filas dinámicas independientes -->
+                            <!-- Filas dinámicas generadas estrictamente según la estructura solicitada -->
                         </tbody>
                     </table>
                 </div>
@@ -191,36 +197,91 @@
             }
         }
 
-        // Categorías operativas independientes solicitadas
-        const areasOperativas = [
-            "Raciones Alimentarias y Apoyo Nutricional",
-            "Apoyo Social y Comunitario",
-            "Servicios Psicológicos",
-            "Trabajo Social",
-            "Servicios Jurídicos y Orientación Legal"
+        // Datos oficiales basados exactamente en tu tabla institucional
+        const estructuraReporte = [
+            {
+                tema: "Población Atendida y Totales del Periodo",
+                conceptos: ["Población Atendida (Mes anterior, Altas, Bajas, Subtotal de residentes)", "Total de Servicios / Sesiones / Asistencias generales del periodo"]
+            },
+            {
+                tema: "Raciones",
+                conceptos: ["Raciones Alimentarias y Comidas servidas"]
+            },
+            {
+                tema: "Servicio Médico y Transporte",
+                conceptos: ["Consultas médicas y orientación médica", "Tomar y monitoreo de signos vitales (TA, FC, Glucemia Capilar)", "Inyecciones, IM, Subcutánea y aplicación de medicamentos", "Curaciones y manejo de heridas / lesiones", "Actividades de la Vida Diaria (AVD) / Acompañamiento en movilidad", "Coordinación y control de higiene personal", "Baño asistido para usuarios con requerimiento de movilidad o sillas", "Áseo bucal y aseo general o cuidado de prótesis dentales", "Preparación y repuestos de dentaduras posturas / prótesis dentales", "Lavado y desinfección de ropa, sábanas y blancos del centro", "Colocación y/o retiro de sondas foley", "Cálculo y monitoreo nutricional de consumo de agua, calórica y macronutrientes", "Atención a defunciones y trámites", "Fisioterapia y Rehabilitación Física", "Psicología", "Reumatología", "Medicina Integrativa y Terapias Alternativas (Acupuntura, Acupresión, Biomagnetismo y Electroacupuntura)", "Evaluación psicométrica, diagnósticos y apoyo psicológico", "Transporte accesible para traslados médicos o comunitarios", "Gestión de apoyos y programas para adultos mayores (vales de leche, despensas, pañales y trámite de documentos gubernamentales)"]
+            },
+            {
+                tema: "Psicología",
+                conceptos: ["Psicoterapia individual para el adulto mayor", "Psicoterapia familiar y resolución de conflictos", "Acompañamiento en procesos de duelo y pérdidas", "Intervención psicológica en crisis, ansiedad y depresión", "Talleres de memoria y estimulación cognitiva", "Sesiones de relajación y manejo del estrés", "Apoyo psicológico y contención para cuidadores primarios", "Talleres de manejo de la dependencia y resiliencia", "Terapias grupales y círculos de diálogo emocional"]
+            },
+            {
+                tema: "Apoyo Social y Comunitario",
+                conceptos: ["Asistencia social y integración comunitaria", "Trabajo Social (Estudios socioeconómicos, visitas domiciliarias y gestiones)", "Gestión de apoyos gubernamentales, civiles y jurídicos externos", "Gestión e interrelación institucional y vinculación con médicos o especialistas", "Servicios de atención de puerta o entrega de despensas o ayudas alimentarias", "Apoyo alimentario extraordinario o social en red"]
+            },
+            {
+                tema: "Apoyo Alimentario",
+                conceptos: ["Apoyo alimentario directo o dotación de insumos alimentarios", "Talleres de cocina y nutrición saludable"]
+            },
+            {
+                tema: "Capacitación en Talleres y Pláticas",
+                conceptos: ["Talleres socioculturales y de manualidades", "Actividades físicas y acondicionamiento", "Cursos de estimulación cognitiva y memoria", "Talleres de arte, pintura y dibujo", "Clases de baile, ritmos latinos y activación musical", "Talleres de lectura, escritura y círculos literarios", "Talleres de corte y confección, tejido y costura"]
+            },
+            {
+                tema: "Envejecimiento Activo",
+                conceptos: ["Uso y manejo de teléfonos, computadoras y tabletas (Tecnologías digitales y redes sociales)", "Talleres de memoria y estimulación cognitiva para adultos mayores", "Voluntariado juvenil y escolar para adultos mayores", "Ferias de salud y activaciones físicas y deportivas", "Convivios y encuentros intergeneracionales"]
+            },
+            {
+                tema: "Eventos",
+                conceptos: ["Festivales de Día de las Madres, Padres, Adulto Mayor y Fiestas Patrias", "Celebración de cumpleaños y posadas navideñas", "Tardes de baile y convivencia social"]
+            },
+            {
+                tema: "Jurídico",
+                conceptos: ["Asesoría y trámite de testamentos y sucesiones", "Atención y defensa en prevención del maltrato y abandono al adulto mayor", "Orientación jurídica en trámites de pensión alimenticia, divorcio y testamentos", "Gestión y tramitación de voluntades anticipadas"]
+            },
+            {
+                tema: "Otros",
+                conceptos: ["Servicios de asistencia general y trámites diversos", "Otras gestiones administrativas, trámites de credencial INAPAM / CURP / RFC", "Visitas domiciliarias de supervisión o seguimiento a casos especiales"]
+            }
         ];
 
         function inicializarTabla() {
             let tbody = document.getElementById('tableBody');
             tbody.innerHTML = "";
 
-            areasOperativas.forEach((area, index) => {
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${area}</strong></td>
-                    <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="ant_${index}"></td>
-                    <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="alt_${index}"></td>
-                    <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="baj_${index}"></td>
-                    <td style="text-align: center;"><strong id="tot_${index}" style="color: var(--dif-orange);">0</strong></td>
-                `;
-                tbody.appendChild(tr);
+            estructuraReporteforEach((grupo, gIndex) => {
+                grupo.conceptos.forEach((conceptoItem, cIndex) => {
+                    let tr = document.createElement('tr');
+                    
+                    // Columna 1: Tema Principal (solo aparece en la primera fila de cada grupo o con rowspan limpio)
+                    let colTema = (cIndex === 0) ? `<td rowspan="${grupo.conceptos.length}" style="background-color: #f1f5f9; font-weight: 700; vertical-align: middle; color: var(--dif-dark);">${grupo.tema}</td>` : '';
+
+                    // Columna 2: Lista desplegable con los conceptos del tema correspondiente
+                    let optionsHtml = grupo.conceptos.map(c => `<option value="${c}" ${c === conceptoItem ? 'selected' : ''}>${c}</option>`).join('');
+                    
+                    let uniqueId = `${gIndex}_${cIndex}`;
+
+                    tr.innerHTML = `
+                        ${colTema}
+                        <td>
+                            <select class="select-concepto">
+                                ${optionsHtml}
+                            </select>
+                        </td>
+                        <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="ant_${uniqueId}"></td>
+                        <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="alt_${uniqueId}"></td>
+                        <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="baj_${uniqueId}"></td>
+                        <td style="text-align: center;"><strong id="tot_${uniqueId}" style="color: var(--dif-orange);">0</strong></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
             });
 
-            // Fila de Totales Automáticos
+            // Fila de Totales Generales
             let trTotal = document.createElement('tr');
             trTotal.className = "total-row";
             trTotal.innerHTML = `
-                <td>TOTAL GENERAL DEL CENTRO</td>
+                <td colspan="2" style="text-align: right;">TOTAL GENERAL INSTITUCIONAL:</td>
                 <td style="text-align: center;" id="sumAnt">0</td>
                 <td style="text-align: center;" id="sumAlt">0</td>
                 <td style="text-align: center;" id="sumBaj">0</td>
@@ -233,20 +294,29 @@
         function calcularTotales() {
             let tAnt = 0, tAlt = 0, tBaj = 0, tTot = 0;
 
-            areasOperativas.forEach((_, index) => {
-                let ant = parseInt(document.getElementById(`ant_${index}`).value) || 0;
-                let alt = parseInt(document.getElementById(`alt_${index}`).value) || 0;
-                let baj = parseInt(document.getElementById(`baj_${index}`).value) || 0;
-                
-                let subtotal = ant + alt - baj;
-                if (subtotal < 0) subtotal = 0;
+            estructuraReporte.forEach((grupo, gIndex) => {
+                grupo.conceptos.forEach((_, cIndex) => {
+                    let uniqueId = `${gIndex}_${cIndex}`;
+                    let antElem = document.getElementById(`ant_${uniqueId}`);
+                    let altElem = document.getElementById(`alt_${uniqueId}`);
+                    let bajElem = document.getElementById(`baj_${uniqueId}`);
+                    
+                    if(antElem && altElem && bajElem) {
+                        let ant = parseInt(antElem.value) || 0;
+                        let alt = parseInt(altElem.value) || 0;
+                        let baj = parseInt(bajElem.value) || 0;
+                        
+                        let subtotal = ant + alt - baj;
+                        if (subtotal < 0) subtotal = 0;
 
-                document.getElementById(`tot_${index}`).textContent = subtotal;
+                        document.getElementById(`tot_${uniqueId}`).textContent = subtotal;
 
-                tAnt += ant;
-                tAlt += alt;
-                tBaj += baj;
-                tTot += subtotal;
+                        tAnt += ant;
+                        tAlt += alt;
+                        tBaj += baj;
+                        tTot += subtotal;
+                    }
+                });
             });
 
             document.getElementById('sumAnt').textContent = tAnt;
@@ -256,11 +326,16 @@
         }
 
         function limpiarFormulario() {
-            if (confirm("¿Desea vaciar todos los campos para iniciar el registro del siguiente mes? Asegúrese de haber descargado su archivo de Excel previo.")) {
-                areasOperativas.forEach((_, index) => {
-                    document.getElementById(`ant_${index}`).value = 0;
-                    document.getElementById(`alt_${index}`).value = 0;
-                    document.getElementById(`baj_${index}`).value = 0;
+            if (confirm("¿Desea vaciar todos los contadores para iniciar el registro del siguiente mes? Asegúrese de haber descargado su archivo de Excel previo.")) {
+                estructuraReporte.forEach((grupo, gIndex) => {
+                    grupo.conceptos.forEach((_, cIndex) => {
+                        let uniqueId = `${gIndex}_${cIndex}`;
+                        if(document.getElementById(`ant_${uniqueId}`)) {
+                            document.getElementById(`ant_${uniqueId}`).value = 0;
+                            document.getElementById(`alt_${uniqueId}`).value = 0;
+                            document.getElementById(`baj_${uniqueId}`).value = 0;
+                        }
+                    });
                 });
                 calcularTotales();
             }
