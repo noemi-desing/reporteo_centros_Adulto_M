@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema DIF Jalisco - Módulo de Reporteo</title>
+    <title>GCAPAM - Sistema de Integración Operativa</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -85,7 +85,7 @@
     <!-- PANTALLA DE ACCESO -->
     <div id="loginScreen">
         <div class="login-card">
-            <h2>DIF JALISCO</h2>
+            <h2>GCAPAM</h2>
             <p>Ingrese la contraseña institucional</p>
             <input type="password" id="accessPassword" placeholder="Contraseña..." onkeypress="handleLoginKey(event)">
             <div id="loginError" class="login-error">Contraseña incorrecta. Intente de nuevo.</div>
@@ -97,11 +97,11 @@
     <div id="appContent" class="app-content">
         <header class="main-header">
             <div class="logo-area">
-                <img src="https://noemi-desing.github.io/acesoriasPUB/assets/logo-dif.png" alt="DIF Jalisco" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'40\'><text x=\'0\' y=\'25\' font-size=\'20\' font-weight=\'bold\' fill=\'%23f37021\'>DIF JALISCO</text></svg>'">
+                <img src="https://noemi-desing.github.io/acesoriasPUB/assets/logo-dif.png" alt="DIF Jalisco" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'40\'><text x=\'0\' y=\'25\' font-size=\'18\' font-weight=\'bold\' fill=\'%23f37021\'>DIF JALISCO</text></svg>'">
             </div>
             <div class="header-titles">
-                <h1>Sistema de Reportes y Centros Operativos</h1>
-                <p>Dirección de Atención a Población Adulta Mayor (DJ-APAM)</p>
+                <h1>GCAPAM (Departamento de Gestión y Control de Atención a Población Adulta Mayor)</h1>
+                <p>Módulo de Reporteo e Integración Operativa de Centros</p>
             </div>
         </header>
 
@@ -109,17 +109,18 @@
             <!-- Sección de Registro / Selección -->
             <section class="card">
                 <div class="card-header">
-                    <h2><i class="fa-solid fa-file-pen"></i> Captura de Datos Operativos</h2>
-                    <button class="btn btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Formato Excel</button>
+                    <h2><i class="fa-solid fa-file-pen"></i> Selección de Centro y Periodo de Reporte</h2>
+                    <button class="btn btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Reporte del Centro (Excel)</button>
                 </div>
                 <div class="form-grid">
                     <div class="form-group">
                         <label><i class="fa-solid fa-building"></i> Seleccione el Centro:</label>
                         <select id="selectCentro" onchange="actualizarReporte()">
-                            <option value="Centro Gerontológico Metropolitana">Centro Gerontológico Metropolitana</option>
-                            <option value="Casa Día Zapopan Norte">Casa Día Zapopan Norte</option>
-                            <option value="Estancia de Día Guadalajara Centro">Estancia de Día Guadalajara Centro</option>
-                            <option value="Centro de Atención Integral Tlaquepaque">Centro de Atención Integral Tlaquepaque</option>
+                            <option value="Centro para el Desarrollo Integral del Adulto Mayor (Bugambilias)">Centro para el Desarrollo Integral del Adulto Mayor (Bugambilias)</option>
+                            <option value="Centro de Día Eduardo Montaño">Centro de Día Eduardo Montaño</option>
+                            <option value="Centro Tapatío de Atención para el Adulto Mayor (CAPAM) / Clínica de la Memoria">Centro Tapatío de Atención para el Adulto Mayor (CAPAM) / Clínica de la Memoria</option>
+                            <option value="Asilo Leónidas K. Demos">Asilo Leónidas K. Demos</option>
+                            <option value="Casa Hogar para Mujeres">Casa Hogar para Mujeres</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -142,10 +143,11 @@
                     <div class="form-group">
                         <label><i class="fa-solid fa-list-check"></i> Área de Servicio:</label>
                         <select id="selectArea" onchange="actualizarReporte()">
-                            <option value="Asistencia Alimentaria">Asistencia Alimentaria</option>
-                            <option value="Trabajo Social y Jurídico">Trabajo Social y Jurídico</option>
+                            <option value="Asistencia Alimentaria y Raciones">Asistencia Alimentaria y Raciones</option>
+                            <option value="Trabajo Social y Apoyo Comunitario">Trabajo Social y Apoyo Comunitario</option>
                             <option value="Servicios de Psicología">Servicios de Psicología</option>
-                            <option value="Actividades y Talleres">Actividades y Talleres</option>
+                            <option value="Servicios Jurídicos">Servicios Jurídicos</option>
+                            <option value="Actividades, Talleres y Residencias">Actividades, Talleres y Residencias</option>
                         </select>
                     </div>
                 </div>
@@ -154,15 +156,14 @@
             <!-- Tabla de Resumen con Sumas Automáticas -->
             <section class="card">
                 <div class="card-header">
-                    <h2><i class="fa-solid fa-table-cells"></i> Resumen Consolidado del Periodo</h2>
-                    <span id="lblCentroActual" style="font-size: 13px; font-weight: 600; color: var(--dif-orange);">Centro Gerontológico Metropolitana</span>
+                    <h2><i class="fa-solid fa-table-cells"></i> Formato de Reporteo Mensual</h2>
+                    <span id="lblCentroActual" style="font-size: 13px; font-weight: 600; color: var(--dif-orange);">Bugambilias</span>
                 </div>
                 <div class="table-responsive">
                     <table id="reportTable">
                         <thead>
                             <tr>
-                                <th>Clave / Concepto</th>
-                                <th>Descripción de Actividad / Servicio</th>
+                                <th>Descripción de Actividad / Servicio / Indicador</th>
                                 <th>Registros Mes Anterior</th>
                                 <th>Altas / Nuevos</th>
                                 <th>Bajas</th>
@@ -170,7 +171,7 @@
                             </tr>
                         </thead>
                         <tbody id="tableBody">
-                            <!-- Los datos se generan dinámicamente o se suman automáticamente -->
+                            <!-- Los datos se generan dinámicamente y se suman automáticamente -->
                         </tbody>
                     </table>
                 </div>
@@ -196,26 +197,29 @@
             if (e.key === 'Enter') { checkPassword(); }
         }
 
-        // Datos simulados dinámicos según el área seleccionada con cálculo de sumas automáticas
         const datosAreas = {
-            "Asistencia Alimentaria": [
-                { clave: "3. DJ-APAM-01", desc: "Desayunos calientes servidos en comedor", mesAnt: 120, altas: 15, bajas: 5 },
-                { clave: "3. DJ-APAM-02", desc: "Entregas de despensas y raciones alimentarias", mesAnt: 85, altas: 10, bajas: 2 },
-                { clave: "3. DJ-APAM-03", desc: "Suplementos nutricionales especiales entregados", mesAnt: 30, altas: 4, bajas: 1 }
+            "Asistencia Alimentaria y Raciones": [
+                { desc: "Desayunos y comidas servidas en comedor del centro", mesAnt: 110, altas: 12, bajas: 4 },
+                { desc: "Entrega mensual de despensas y apoyos alimentarios directos", mesAnt: 75, altas: 8, bajas: 2 },
+                { desc: "Dotación de suplementos nutricionales específicos", mesAnt: 25, altas: 3, bajas: 1 }
             ],
-            "Trabajo Social y Jurídico": [
-                { clave: "3. DJ-APAM-04", desc: "Estudios socioeconómicos domiciliarios", mesAnt: 45, altas: 8, bajas: 3 },
-                { clave: "3. DJ-APAM-05", desc: "Asesorías jurídicas y gestión familiar", mesAnt: 25, altas: 6, bajas: 2 },
-                { clave: "3. DJ-APAM-06", desc: "Canalización a redes de apoyo institucional", mesAnt: 15, altas: 3, bajas: 1 }
+            "Trabajo Social y Apoyo Comunitario": [
+                { desc: "Estudios socioeconómicos y valoraciones de ingreso", mesAnt: 40, altas: 7, bajas: 2 },
+                { desc: "Visitas domiciliarias y seguimiento de casos", mesAnt: 20, altas: 5, bajas: 1 },
+                { desc: "Canalización a redes institucionales de apoyo social", mesAnt: 15, altas: 4, bajas: 2 }
             ],
             "Servicios de Psicología": [
-                { clave: "3. DJ-APAM-07", desc: "Sesiones de psicoterapia individual", mesAnt: 40, altas: 7, bajas: 2 },
-                { clave: "3. DJ-APAM-08", desc: "Talleres grupales de salud mental y emocional", mesAnt: 60, altas: 12, bajas: 4 }
+                { desc: "Sesiones de psicoterapia individual a residentes / usuarios", mesAnt: 35, altas: 6, bajas: 2 },
+                { desc: "Talleres y dinámicas grupales de salud mental y cognitiva", mesAnt: 55, altas: 10, bajas: 3 }
             ],
-            "Actividades y Talleres": [
-                { clave: "3. DJ-APAM-09", desc: "Talleres de activación física y motricidad", mesAnt: 95, altas: 14, bajas: 6 },
-                { clave: "3. DJ-APAM-10", desc: "Clases de manualidades, arte y recreación", mesAnt: 70, altas: 9, bajas: 3 },
-                { clave: "3. DJ-APAM-11", desc: "Pláticas preventivas y de desarrollo humano", mesAnt: 50, altas: 10, bajas: 2 }
+            "Servicios Jurídicos": [
+                { desc: "Asesorías jurídicas especializadas y orientación legal", mesAnt: 22, altas: 4, bajas: 1 },
+                { desc: "Gestión de trámites de protección familiar y civil", mesAnt: 14, altas: 3, bajas: 1 }
+            ],
+            "Actividades, Talleres y Residencias": [
+                { desc: "Clases de activación física, gerontología y motricidad", mesAnt: 90, altas: 12, bajas: 5 },
+                { desc: "Talleres ocupacionales, manualidades y recreación", mesAnt: 65, altas: 8, bajas: 3 },
+                { desc: "Atención integral de residentes y pernocta en asilo/casa hogar", mesAnt: 45, altas: 2, bajas: 1 }
             ]
         };
 
@@ -239,7 +243,6 @@
 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>${item.clave}</strong></td>
                     <td>${item.desc}</td>
                     <td>${item.mesAnt}</td>
                     <td>${item.altas}</td>
@@ -249,11 +252,10 @@
                 tbody.appendChild(tr);
             });
 
-            // Fila de Suma Automática de Totales y Subtotales
             let trTotal = document.createElement('tr');
             trTotal.className = "total-row";
             trTotal.innerHTML = `
-                <td colspan="2">TOTAL GENERAL DEL ÁREA</td>
+                <td>TOTAL GENERAL DE OPERACIÓN</td>
                 <td>${sumAnt}</td>
                 <td>${sumAltas}</td>
                 <td>${sumBajas}</td>
@@ -270,14 +272,14 @@
             let table = document.getElementById('reportTable');
             let html = table.outerHTML;
             
-            let blob = new Blob(['\ufeff' + `<html><head><meta charset="utf-8"><title>Reporte ${centro}</title></head><body><h3>Reporte Institucional - DIF Jalisco</h3><p><b>Centro:</b> ${centro} | <b>Mes:</b> ${mes} | <b>Área:</b> ${area}</p>` + html + '</body></html>'], {
+            let blob = new Blob(['\ufeff' + `<html><head><meta charset="utf-8"><title>Reporte ${centro}</title></head><body><h3>GCAPAM - Reporte Mensual de Centro</h3><p><b>Centro:</b> ${centro} <br><b>Mes de Reporte:</b> ${mes} <br><b>Área:</b> ${area}</p>` + html + '</body></html>'], {
                 type: 'application/vnd.ms-excel'
             });
             
             let url = URL.createObjectURL(blob);
             let a = document.createElement('a');
             a.href = url;
-            a.download = `Reporte_${centro.replace(/\s+/g, '_')}_${mes}.xls`;
+            a.download = `Reporte_${centro.substring(0, 15).trim().replace(/[\s\(\)\/]+/g, '_')}_${mes}.xls`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
