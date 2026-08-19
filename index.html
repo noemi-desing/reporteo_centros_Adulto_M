@@ -11,7 +11,7 @@
     <style>
         :root {
             --dif-orange: #f37021;
-            --dif-gray: #5a6578; /* Gris institucional del DIF */
+            --dif-gray: #5a6578;
             --dif-light: #f8fafc;
             --border-color: #cbd5e1;
             --text-color: #334155;
@@ -47,7 +47,7 @@
         .header-titles h1 { font-family: 'Montserrat', sans-serif; font-size: 17px; color: var(--dif-gray); font-weight: 700; }
         .header-titles p { font-size: 12px; color: var(--dif-orange); font-weight: 600; }
 
-        .container { width: 95%; max-width: 1350px; margin: 30px auto; }
+        .container { width: 98%; max-width: 1300px; margin: 30px auto; }
         
         .card { background: #ffffff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid var(--border-color); margin-bottom: 30px; overflow: hidden; }
         .card-header { padding: 20px 25px; background: #ffffff; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
@@ -59,8 +59,8 @@
         .btn-primary:hover { background-color: #d95e13; }
         .btn-success { background-color: #10b981; color: #fff; }
         .btn-success:hover { background-color: #059669; }
-        .btn-danger { background-color: #ef4444; color: #fff; }
-        .btn-danger:hover { background-color: #dc2626; }
+        .btn-secondary-gray { background-color: var(--dif-gray); color: #fff; }
+        .btn-secondary-gray:hover { background-color: #475161; }
 
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 25px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--dif-gray); margin-bottom: 8px; }
@@ -70,23 +70,24 @@
 
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px 15px; border: 1px solid var(--border-color); font-size: 13px; }
-        th { background-color: var(--dif-gray); color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 12px; text-transform: uppercase; text-align: center; }
+        th, td { padding: 10px 12px; border: 1px solid var(--border-color); font-size: 12px; }
+        th { background-color: var(--dif-gray); color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 11px; text-transform: uppercase; text-align: center; }
         tr:hover { background-color: #f8fafc; }
         
         .select-concepto {
-            width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 13px; background: #fff; outline: none;
+            width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: #fff; outline: none;
         }
         .select-concepto:focus { border-color: var(--dif-orange); }
 
         .input-number {
-            width: 90px; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; font-size: 14px;
+            width: 75px; padding: 5px; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; font-size: 12px;
         }
         .input-number:focus { border-color: var(--dif-orange); outline: none; }
         
+        .tema-subtotal-row { background-color: #e2e8f0 !important; font-weight: 700; color: var(--dif-gray); }
         .total-row { background-color: #fff7ed !important; font-weight: 700; color: var(--dif-gray); border-top: 2px solid var(--dif-orange); }
+        
         .action-bar { padding: 20px 25px; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap; }
-
         .app-content { display: none; }
     </style>
 </head>
@@ -111,7 +112,7 @@
             </div>
             <div class="header-titles">
                 <h1>GCAPAM (Departamento de Gestión y Control de Atención a Población Adulta Mayor)</h1>
-                <p>Plataforma Institucional de Reporteo Mensual por Centro</p>
+                <p>Plataforma Institucional de Reporteo por Género (Mujeres, Hombres y Total)</p>
             </div>
         </header>
 
@@ -152,10 +153,10 @@
                 </div>
             </section>
 
-            <!-- Formato de Captura Operativa con Temas, Subtemas y Listas Desplegables -->
+            <!-- Formato de Captura Consolidado -->
             <section class="card">
                 <div class="card-header">
-                    <h2><i class="fa-solid fa-file-excel"></i> Formato de Reporte Mensual por Tema y Subtema</h2>
+                    <h2><i class="fa-solid fa-file-excel"></i> Formato Institucional por Tema, Subtema y Género</h2>
                     <span id="lblEstado" style="font-size: 12px; font-weight: 600; color: #10b981;"><i class="fa-solid fa-circle-check"></i> Listo para captura</span>
                 </div>
                 <div class="table-responsive">
@@ -163,20 +164,20 @@
                         <thead>
                             <tr>
                                 <th style="width: 20%;">Tema Principal</th>
-                                <th style="width: 32%;">Concepto / Subtema (Seleccione de la Lista)</th>
-                                <th style="width: 12%; text-align: center;">Mes Anterior</th>
-                                <th style="width: 12%; text-align: center;">Altas / Nuevos</th>
-                                <th style="width: 12%; text-align: center;">Bajas</th>
-                                <th style="width: 12%; text-align: center;">Total Atendidos</th>
+                                <th style="width: 20%;">Subtema</th>
+                                <th style="width: 30%;">Concepto (Lista Desplegable)</th>
+                                <th style="width: 10%; background: #475161;">Mujeres (M)</th>
+                                <th style="width: 10%; background: #374151;">Hombres (H)</th>
+                                <th style="width: 10%; background: var(--dif-orange);">Total</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody">
-                            <!-- Filas dinámicas generadas -->
+                            <!-- Filas dinámicas -->
                         </tbody>
                     </table>
                 </div>
                 <div class="action-bar">
-                    <button class="btn btn-danger" onclick="limpiarFormulario()"><i class="fa-solid fa-broom"></i> Limpiar para Siguiente Mes</button>
+                    <button class="btn btn-secondary-gray" onclick="limpiarFormulario()"><i class="fa-solid fa-broom"></i> Limpiar para Siguiente Mes</button>
                     <button class="btn btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Reporte en Excel</button>
                 </div>
             </section>
@@ -197,144 +198,277 @@
             }
         }
 
-        // Estructura oficial con temas y subtemas institucionales
-        const estructuraReporte = [
+        const estructuraMatriz = [
             {
-                tema: "Población Atendida y Totales del Periodo",
-                conceptos: ["Población Atendida (Mes anterior, Altas, Bajas, Subtotal de residentes)", "Total de Servicios / Sesiones / Asistencias generales del periodo"]
+                tema: "Población Atendida",
+                subtemas: [
+                    {
+                        subtema: "Control de Residentes y Asistencias",
+                        conceptos: [
+                            "Población Atendida (Mes anterior, Altas, Bajas, Subtotal de residentes)",
+                            "Total de Servicios / Sesiones / Asistencias generales del periodo",
+                            "Promedio diario de atención a residentes"
+                        ]
+                    }
+                ]
             },
             {
-                tema: "Raciones",
-                conceptos: ["Raciones Alimentarias y Comidas servidas"]
+                tema: "Raciones Alimentarias",
+                subtemas: [
+                    {
+                        subtema: "Alimentación y Comidas",
+                        conceptos: [
+                            "Raciones Alimentarias y Comidas servidas diarias",
+                            "Dotación de desayunos y Cenas calientes",
+                            "Colaciones y suplementos alimenticios especiales"
+                        ]
+                    }
+                ]
             },
             {
-                tema: "Servicio Médico y Transporte",
-                conceptos: ["Consultas médicas y orientación médica", "Tomar y monitoreo de signos vitales (TA, FC, Glucemia Capilar)", "Inyecciones, IM, Subcutánea y aplicación de medicamentos", "Curaciones y manejo de heridas / lesiones", "Actividades de la Vida Diaria (AVD) / Acompañamiento en movilidad", "Coordinación y control de higiene personal", "Baño asistido para usuarios con requerimiento de movilidad o sillas", "Áseo bucal y aseo general o cuidado de prótesis dentales", "Preparación y repuestos de dentaduras posturas / prótesis dentales", "Lavado y desinfección de ropa, sábanas y blancos del centro", "Colocación y/o retiro de sondas foley", "Cálculo y monitoreo nutricional de consumo de agua, calórica y macronutrientes", "Atención a defunciones y trámites", "Fisioterapia y Rehabilitación Física", "Psicología", "Reumatología", "Medicina Integrativa y Terapias Alternativas", "Evaluación psicométrica, diagnósticos y apoyo psicológico", "Transporte accesible para traslados médicos o comunitarios", "Gestión de apoyos y programas para adultos mayores"]
+                tema: "Apoyo Social",
+                subtemas: [
+                    {
+                        subtema: "Trabajo Social y Gestiones",
+                        conceptos: [
+                            "Asistencia social e integración comunitaria",
+                            "Trabajo Social (Estudios socioeconómicos y visitas)",
+                            "Gestión de apoyos gubernamentales y civiles",
+                            "Servicios de atención de puerta y orientación"
+                        ]
+                    }
+                ]
             },
             {
                 tema: "Psicología",
-                conceptos: ["Psicoterapia individual para el adulto mayor", "Psicoterapia familiar y resolución de conflictos", "Acompañamiento en procesos de duelo y pérdidas", "Intervención psicológica en crisis, ansiedad y depresión", "Talleres de memoria y estimulación cognitiva", "Sesiones de relajación y manejo del estrés", "Apoyo psicológico y contención para cuidadores primarios", "Talleres de manejo de la dependencia y resiliencia", "Terapias grupales y círculos de diálogo emocional"]
+                subtemas: [
+                    {
+                        subtema: "Atención Psicológica Exclusiva",
+                        conceptos: [
+                            "Psicoterapia individual para el adulto mayor",
+                            "Psicoterapia familiar y resolución de conflictos",
+                            "Acompañamiento en procesos de duelo",
+                            "Intervención psicológica en crisis y depresión"
+                        ]
+                    }
+                ]
             },
             {
-                tema: "Apoyo Social y Comunitario",
-                conceptos: ["Asistencia social y integración comunitaria", "Trabajo Social (Estudios socioeconómicos y visitas domiciliarias)", "Gestión de apoyos gubernamentales, civiles y jurídicos externos", "Gestión e interrelación institucional y vinculación con médicos o especialistas", "Servicios de atención de puerta o entrega de despensas", "Apoyo alimentario extraordinario o social en red"]
+                tema: "Servicio Médico y Transporte",
+                subtemas: [
+                    {
+                        subtema: "Atención Médica y Consultas",
+                        conceptos: [
+                            "Consultas médicas y orientación general",
+                            "Valoración de signos vitales (TA, FC, Glucemia)",
+                            "Inyecciones (IM, Subcutánea) y medicamentos",
+                            "Curaciones y manejo avanzado de heridas"
+                        ]
+                    },
+                    {
+                        subtema: "Cuidados y Fisioterapia",
+                        conceptos: [
+                            "Actividades de la Vida Diaria (AVD) y movilidad",
+                            "Coordinación de higiene personal y baño asistido",
+                            "Lavado y desinfección de blancos y sábanas",
+                            "Fisioterapia y Rehabilitación Física"
+                        ]
+                    }
+                ]
             },
             {
                 tema: "Apoyo Alimentario",
-                conceptos: ["Apoyo alimentario directo o dotación de insumos alimentarios", "Talleres de cocina y nutrición saludable"]
+                subtemas: [
+                    {
+                        subtema: "Nutrición y Talleres",
+                        conceptos: [
+                            "Apoyo alimentario directo e insumos de despensa",
+                            "Paquetes de despensas institucionales entregadas",
+                            "Talleres de cocina y nutrición saludable",
+                            "Control de dietas especiales por prescripción médica"
+                        ]
+                    }
+                ]
             },
             {
                 tema: "Capacitación en Talleres y Pláticas",
-                conceptos: ["Talleres socioculturales y de manualidades", "Actividades físicas y acondicionamiento", "Cursos de estimulación cognitiva y memoria", "Talleres de arte, pintura y dibujo", "Clases de baile, ritmos latinos y activación musical", "Talleres de lectura, escritura y círculos literarios", "Talleres de corte y confección, tejido y costura"]
+                subtemas: [
+                    {
+                        subtema: "Talleres y Educación",
+                        conceptos: [
+                            "Talleres socioculturales y de manualidades",
+                            "Actividades físicas y acondicionamiento",
+                            "Cursos de estimulación cognitiva y memoria",
+                            "Talleres de arte, pintura, música y costura"
+                        ]
+                    }
+                ]
             },
             {
                 tema: "Envejecimiento Activo",
-                conceptos: ["Uso y manejo de teléfonos, computadoras y tabletas (Tecnologías digitales)", "Talleres de memoria y estimulación cognitiva para adultos mayores", "Voluntariado juvenil y escolar para adultos mayores", "Ferias de salud y activaciones físicas y deportivas", "Convivios y encuentros intergeneracionales"]
+                subtemas: [
+                    {
+                        subtema: "Tecnología y Convivencia",
+                        conceptos: [
+                            "Manejo de teléfonos y tabletas (Tecnologías digitales)",
+                            "Talleres de memoria para adultos mayores activos",
+                            "Voluntariado juvenil y escolar intergeneracional",
+                            "Ferias de salud y activaciones deportivas"
+                        ]
+                    }
+                ]
             },
             {
                 tema: "Eventos",
-                conceptos: ["Festivales de Día de las Madres, Padres, Adulto Mayor y Fiestas Patrias", "Celebración de cumpleaños y posadas navideñas", "Tardes de baile y convivencia social"]
+                subtemas: [
+                    {
+                        subtema: "Festivales y Celebraciones",
+                        conceptos: [
+                            "Festivales de Día de las Madres, Padres y Adulto Mayor",
+                            "Celebración de cumpleaños y posadas navideñas",
+                            "Tardes de baile y convivencia social",
+                            "Encuentros culturales y recreativos externos"
+                        ]
+                    }
+                ]
             },
             {
                 tema: "Jurídico",
-                conceptos: ["Asesoría y trámite de testamentos y sucesiones", "Atención y defensa en prevención del maltrato y abandono al adulto mayor", "Orientación jurídica en trámites de pensión alimenticia y divorcio", "Gestión y tramitación de voluntades anticipadas"]
+                subtemas: [
+                    {
+                        subtema: "Asesoría Legal e Independiente",
+                        conceptos: [
+                            "Asesoría y trámite de testamentos y sucesiones",
+                            "Atención en prevención del maltrato y abandono",
+                            "Orientación en pensión alimenticia y divorcio",
+                            "Gestión de voluntades anticipadas y documentos"
+                        ]
+                    }
+                ]
             },
             {
                 tema: "Otros",
-                conceptos: ["Servicios de asistencia general y trámites diversos", "Otras gestiones administrativas, trámites de credencial INAPAM / CURP / RFC", "Visitas domiciliarias de supervisión o seguimiento a casos especiales"]
+                subtemas: [
+                    {
+                        subtema: "Gestiones Diversas",
+                        conceptos: [
+                            "Servicios de asistencia general y trámites",
+                            "Gestiones de credencial INAPAM / CURP / RFC",
+                            "Visitas domiciliarias de supervisión o seguimiento",
+                            "Otras asistencias operativas extraordinarias"
+                        ]
+                    }
+                ]
             }
         ];
 
         function inicializarTabla() {
             let tbody = document.getElementById('tableBody');
             tbody.innerHTML = "";
+            let globalRowIndex = 0;
 
-            estructuraReporte.forEach((grupo, gIndex) => {
-                grupo.conceptos.forEach((conceptoItem, cIndex) => {
-                    let tr = document.createElement('tr');
-                    
-                    // Columna 1: Tema Principal (con rowspan para abarcar sus subtemas)
-                    let colTema = (cIndex === 0) ? `<td rowspan="${grupo.conceptos.length}" style="background-color: #f1f5f9; font-weight: 700; vertical-align: middle; color: var(--dif-gray);">${grupo.tema}</td>` : '';
+            estructuraMatriz.forEach((temaObj, tIndex) => {
+                let totalFilasTema = 0;
+                temaObj.subtemas.forEach(sub => totalFilasTema += sub.conceptos.length);
+                let tFirstRow = true;
 
-                    // Columna 2: Lista desplegable con los conceptos del tema correspondiente
-                    let optionsHtml = grupo.conceptos.map(c => `<option value="${c}" ${c === conceptoItem ? 'selected' : ''}>${c}</option>`).join('');
-                    
-                    let uniqueId = `${gIndex}_${cIndex}`;
+                temaObj.subtemas.forEach((subObj) => {
+                    subObj.conceptos.forEach((conceptoItem, cIndex) => {
+                        let tr = document.createElement('tr');
+                        
+                        let colTema = tFirstRow ? `<td rowspan="${totalFilasTema + 1}" style="background-color: #f1f5f9; font-weight: 700; vertical-align: middle; color: var(--dif-gray);">${temaObj.tema}</td>` : '';
+                        if (tFirstRow) tFirstRow = false;
 
-                    tr.innerHTML = `
-                        ${colTema}
-                        <td>
-                            <select class="select-concepto">
-                                ${optionsHtml}
-                            </select>
-                        </td>
-                        <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="ant_${uniqueId}"></td>
-                        <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="alt_${uniqueId}"></td>
-                        <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="baj_${uniqueId}"></td>
-                        <td style="text-align: center;"><strong id="tot_${uniqueId}" style="color: var(--dif-orange);">0</strong></td>
-                    `;
-                    tbody.appendChild(tr);
+                        let colSubtema = (cIndex === 0) ? `<td rowspan="${subObj.conceptos.length}" style="background-color: #f8fafc; font-weight: 600; vertical-align: middle; color: #475569;">${subObj.subtema}</td>` : '';
+
+                        let optionsHtml = subObj.conceptos.map(c => `<option value="${c}" ${c === conceptoItem ? 'selected' : ''}>${c}</option>`).join('');
+                        let rId = globalRowIndex++;
+
+                        tr.innerHTML = `
+                            ${colTema}
+                            ${colSubtema}
+                            <td><select class="select-concepto">${optionsHtml}</select></td>
+                            <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="m_${rId}"></td>
+                            <td style="text-align: center;"><input type="number" class="input-number" value="0" min="0" oninput="calcularTotales()" id="h_${rId}"></td>
+                            <td style="text-align: center;"><strong id="tot_${rId}" style="color: var(--dif-orange);">0</strong></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
                 });
+
+                // Fila de Subtotal por Tema Principal
+                let trTemaSub = document.createElement('tr');
+                trTemaSub.className = "tema-subtotal-row";
+                trTemaSub.innerHTML = `
+                    <td colspan="2" style="text-align: right;">SUBTOTAL - ${temaObj.tema}:</td>
+                    <td style="text-align: center;" id="subM_t${tIndex}">0</td>
+                    <td style="text-align: center;" id="subH_t${tIndex}">0</td>
+                    <td style="text-align: center; color: var(--dif-orange);" id="subTot_t${tIndex}">0</td>
+                `;
+                tbody.appendChild(trTemaSub);
             });
 
-            // Fila de Totales Generales
+            // Fila de Total General Institucional
             let trTotal = document.createElement('tr');
             trTotal.className = "total-row";
             trTotal.innerHTML = `
-                <td colspan="2" style="text-align: right;">TOTAL GENERAL INSTITUCIONAL:</td>
-                <td style="text-align: center;" id="sumAnt">0</td>
-                <td style="text-align: center;" id="sumAlt">0</td>
-                <td style="text-align: center;" id="sumBaj">0</td>
-                <td style="text-align: center;" id="sumTot">0</td>
+                <td colspan="3" style="text-align: right;">TOTAL GENERAL INSTITUCIONAL:</td>
+                <td style="text-align: center;" id="sumM">0</td>
+                <td style="text-align: center;" id="sumH">0</td>
+                <td style="text-align: center; color: var(--dif-orange);" id="sumTotGral">0</td>
             `;
             tbody.appendChild(trTotal);
             calcularTotales();
         }
 
         function calcularTotales() {
-            let tAnt = 0, tAlt = 0, tBaj = 0, tTot = 0;
+            let globalRowIndex = 0;
+            let sumTotalM = 0, sumTotalH = 0, sumTotalGral = 0;
 
-            estructuraReporte.forEach((grupo, gIndex) => {
-                grupo.conceptos.forEach((_, cIndex) => {
-                    let uniqueId = `${gIndex}_${cIndex}`;
-                    let antElem = document.getElementById(`ant_${uniqueId}`);
-                    let altElem = document.getElementById(`alt_${uniqueId}`);
-                    let bajElem = document.getElementById(`baj_${uniqueId}`);
-                    
-                    if(antElem && altElem && bajElem) {
-                        let ant = parseInt(antElem.value) || 0;
-                        let alt = parseInt(altElem.value) || 0;
-                        let baj = parseInt(bajElem.value) || 0;
-                        
-                        let subtotal = ant + alt - baj;
-                        if (subtotal < 0) subtotal = 0;
+            estructuraMatriz.forEach((temaObj, tIndex) => {
+                let temaM = 0, temaH = 0, temaGral = 0;
 
-                        document.getElementById(`tot_${uniqueId}`).textContent = subtotal;
+                temaObj.subtemas.forEach(subObj => {
+                    subObj.conceptos.forEach(() => {
+                        let rId = globalRowIndex++;
+                        let m = parseInt(document.getElementById(`m_${rId}`).value) || 0;
+                        let h = parseInt(document.getElementById(`h_${rId}`).value) || 0;
+                        let rowTot = m + h;
 
-                        tAnt += ant;
-                        tAlt += alt;
-                        tBaj += baj;
-                        tTot += subtotal;
-                    }
+                        document.getElementById(`tot_${rId}`).textContent = rowTot;
+
+                        temaM += m;
+                        temaH += h;
+                        temaGral += rowTot;
+                    });
                 });
+
+                document.getElementById(`subM_t${tIndex}`).textContent = temaM;
+                document.getElementById(`subH_t${tIndex}`).textContent = temaH;
+                document.getElementById(`subTot_t${tIndex}`).textContent = temaGral;
+
+                sumTotalM += temaM;
+                sumTotalH += temaH;
+                sumTotalGral += temaGral;
             });
 
-            document.getElementById('sumAnt').textContent = tAnt;
-            document.getElementById('sumAlt').textContent = tAlt;
-            document.getElementById('sumBaj').textContent = tBaj;
-            document.getElementById('sumTot').textContent = tTot;
+            document.getElementById('sumM').textContent = sumTotalM;
+            document.getElementById('sumH').textContent = sumTotalH;
+            document.getElementById('sumTotGral').textContent = sumTotalGral;
         }
 
         function limpiarFormulario() {
-            if (confirm("¿Desea vaciar todos los contadores para iniciar el registro del siguiente mes? Asegúrese de haber descargado su archivo de Excel previo.")) {
-                estructuraReporte.forEach((grupo, gIndex) => {
-                    grupo.conceptos.forEach((_, cIndex) => {
-                        let uniqueId = `${gIndex}_${cIndex}`;
-                        if(document.getElementById(`ant_${uniqueId}`)) {
-                            document.getElementById(`ant_${uniqueId}`).value = 0;
-                            document.getElementById(`alt_${uniqueId}`).value = 0;
-                            document.getElementById(`baj_${uniqueId}`).value = 0;
-                        }
+            if (confirm("¿Desea vaciar todos los contadores para iniciar el registro del siguiente mes?")) {
+                let globalRowIndex = 0;
+                estructuraMatriz.forEach(temaObj => {
+                    temaObj.subtemas.forEach(subObj => {
+                        subObj.conceptos.forEach(() => {
+                            let rId = globalRowIndex++;
+                            let elM = document.getElementById(`m_${rId}`);
+                            let elH = document.getElementById(`h_${rId}`);
+                            if (elM) elM.value = 0;
+                            if (elH) elH.value = 0;
+                        });
                     });
                 });
                 calcularTotales();
@@ -344,18 +478,17 @@
         function exportToExcel() {
             let centro = document.getElementById('selectCentro').value;
             let mes = document.getElementById('selectMes').value;
-            
             let table = document.getElementById('reportTable');
             let html = table.outerHTML;
             
-            let blob = new Blob(['\ufeff' + `<html><head><meta charset="utf-8"><title>Reporte Mensual</title></head><body><h3>GCAPAM - Reporte Operativo Mensual de Centro</h3><p><b>Centro:</b> ${centro} <br><b>Mes Reportado:</b> ${mes}</p>` + html + '</body></html>'], {
+            let blob = new Blob(['\ufeff' + `<html><head><meta charset="utf-8"><title>Reporte Mensual</title></head><body><h3>GCAPAM - Reporte por Género y Subtotales</h3><p><b>Centro:</b> ${centro} <br><b>Mes Reportado:</b> ${mes}</p>` + html + '</body></html>'], {
                 type: 'application/vnd.ms-excel'
             });
             
             let url = URL.createObjectURL(blob);
             let a = document.createElement('a');
             a.href = url;
-            a.download = `Reporte_${centro.substring(0, 15).trim().replace(/[\s\(\)\/]+/g, '_')}_${mes}.xls`;
+            a.download = `Reporte_GCAPAM_${centro.substring(0, 15).trim().replace(/[\s\(\)\/]+/g, '_')}_${mes}.xls`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
