@@ -94,6 +94,13 @@
         .total-row { background-color: #fff7ed !important; font-weight: 700; color: var(--dif-gray); border-top: 2px solid var(--dif-orange); }
         
         .action-bar { padding: 20px 25px; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap; }
+        
+        /* Panel Directivo */
+        .directivo-panel { background: #f1f5f9; padding: 25px; border-top: 2px solid var(--dif-gray); }
+        .directivo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .report-status-list { list-style: none; margin-bottom: 20px; }
+        .report-status-list li { background: #fff; padding: 10px 15px; margin-bottom: 8px; border-radius: 6px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+
         .app-content { display: none; }
     </style>
 </head>
@@ -184,9 +191,33 @@
                         </tbody>
                     </table>
                 </div>
+                
                 <div class="action-bar">
                     <button class="btn btn-secondary-gray" onclick="limpiarFormulario()"><i class="fa-solid fa-broom"></i> Limpiar Registros</button>
-                    <button class="btn btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Reporte en Excel</button>
+                    <button class="btn btn-primary" onclick="guardarReporteCentro()"><i class="fa-solid fa-floppy-disk"></i> Guardar y Subir Reporte del Centro</button>
+                    <button class="btn btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Resumen del Centro</button>
+                </div>
+
+                <!-- APARTADO DIRECTIVO Y DE CONTROL DE CENTROS -->
+                <div class="directivo-panel">
+                    <h3 style="font-family: 'Montserrat', sans-serif; font-size: 15px; color: var(--dif-gray); margin-bottom: 15px;">
+                        <i class="fa-solid fa-chart-pie" style="color: var(--dif-orange);"></i> Panel Directivo: Control y Consolidación de Centros
+                    </h3>
+                    <p style="font-size: 13px; color: #6b7280; margin-bottom: 15px;">
+                        Aquí se almacenan los reportes emitidos por cada centro institucional. Puede descargar el reporte individual de cualquier centro guardado o generar el archivo consolidado general (ambos en formato Excel sin conceptos, organizados estrictamente por Temas, Subtemas y Totales).
+                    </p>
+                    
+                    <div style="font-weight: 600; font-size: 13px; margin-bottom: 8px; color: var(--dif-gray);">Centros con reporte guardado:</div>
+                    <ul id="listaCentrosGuardados" class="report-status-list">
+                        <!-- Se llena dinámicamente -->
+                        <li style="color: #94a3b8; font-style: italic;">No hay reportes institucionales guardados todavía.</li>
+                    </ul>
+
+                    <div class="directivo-grid">
+                        <button class="btn btn-success" onclick="exportarExcelConsolidadoGeneral()" style="justify-content: center; padding: 12px;">
+                            <i class="fa-solid fa-file-excel"></i> Descargar Consolidado General (Integrado)
+                        </button>
+                    </div>
                 </div>
             </section>
         </main>
@@ -199,6 +230,7 @@
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('appContent').style.display = 'block';
                 inicializarTabla();
+                cargarHistorialReportes();
             } else {
                 let err = document.getElementById('loginError');
                 err.style.display = 'block';
@@ -533,186 +565,306 @@
 
             temasUnicos.forEach((temaNombre, tIndex) => {
                 let filasDelTema = filasDinamicas.map((f, idx) => ({f, idx})).filter(item => item.f.tema === temaNombre);
-                let cantidadFilas = filasDelTema.length;
-                
-                let temaH = 0, temaM = 0, temaTot = 0;
+                let subH = 0, subM = 0;
 
-                if (cantidadFilas > 0) {
-                    filasDelTema.forEach((item, cIndex) => {
-                        let f = item.f;
-                        let realIdx = item.idx;
-                        let tr = document.createElement('tr');
+                filasDelTema.forEach(item => {
+                    let f = item.f;
+                    let idx = item.idx;
+                    let totalFila = Number(f.hombre) + Number(f.mujer);
+                    subH += Number(f.hombre);
+                    subM += Number(f.mujer);
 
-                        let colTema = (cIndex === 0) ? `<td rowspan="${cantidadFilas + 1}" style="background-color: #f1f5f9; font-weight: 700; vertical-align: middle; color: var(--dif-gray);">${temaNombre}<br><br><button class="btn btn-primary btn-sm" onclick="agregarFila('${temaNombre}')" title="Agregar concepto a este tema"><i class="fa-solid fa-plus"></i> Agregar Concepto</button></td>` : '';
-                        let colSubtema = (cIndex === 0) ? `<td rowspan="${cantidadFilas}" style="background-color: #f8fafc; font-weight: 600; vertical-align: middle; color: #475569;">${f.subtema}</td>` : '';
-
-                        let opcionesHtml = catalogoConceptos[temaNombre].opciones.map(opt => `<option value="${opt}" ${opt === f.conceptoSeleccionado ? 'selected' : ''}>${opt}</option>`).join('');
-
-                        let esPersonalizado = (f.conceptoSeleccionado === "+ Otro servicio (Escribir concepto personalizado)" || f.esCustom);
-                        let campoConceptoHtml = '';
-
-                        if (temaNombre === "Otros Servicios" && (f.conceptoSeleccionado === "+ Otro servicio (Escribir concepto personalizado)" || f.esCustom)) {
-                            if(!f.esCustom) { f.conceptoCustomVal = ""; f.esCustom = true; }
-                            campoConceptoHtml = `
-                                <div style="display: flex; flex-direction: column; gap: 4px;">
-                                    <select class="select-concepto" onchange="cambiarTipoConcepto(${realIdx}, this.value)">${opcionesHtml}</select>
-                                    <input type="text" class="input-custom-concepto" value="${f.conceptoCustomVal || ''}" placeholder="Escriba su concepto aquí..." oninput="actualizarDato(${realIdx}, 'conceptoCustomVal', this.value)">
-                                </div>`;
-                        } else {
-                            f.esCustom = false;
-                            campoConceptoHtml = `<select class="select-concepto" onchange="cambiarTipoConcepto(${realIdx}, this.value)">${opcionesHtml}</select>`;
-                        }
-
-                        let rowTot = f.hombre + f.mujer;
-                        temaH += f.hombre;
-                        temaM += f.mujer;
-                        temaTot += rowTot;
-
-                        tr.innerHTML = `
-                            ${colTema}
-                            ${colSubtema}
-                            <td>${campoConceptoHtml}</td>
-                            <td style="text-align: center;"><input type="number" class="input-number" value="${f.hombre}" min="0" oninput="actualizarDato(${realIdx}, 'hombre', parseInt(this.value)||0)"></td>
-                            <td style="text-align: center;"><input type="number" class="input-number" value="${f.mujer}" min="0" oninput="actualizarDato(${realIdx}, 'mujer', parseInt(this.value)||0)"></td>
-                            <td><input type="text" class="input-obs" value="${f.obs}" oninput="actualizarDato(${realIdx}, 'obs', this.value)" placeholder="Detalle..."></td>
-                            <td style="text-align: center;"><strong id="tot_${realIdx}" style="color: var(--dif-orange);">${rowTot}</strong></td>
-                            <td style="text-align: center;"><button class="btn btn-secondary-gray btn-sm" onclick="eliminarFila(${realIdx})" title="Eliminar fila"><i class="fa-solid fa-trash"></i></button></td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-
-                    let trSub = document.createElement('tr');
-                    trSub.className = "tema-subtotal-row";
-                    trSub.innerHTML = `
-                        <td colspan="3" style="text-align: right;">SUBTOTAL - ${temaNombre}:</td>
-                        <td style="text-align: center;" id="subH_t${tIndex}">${temaH}</td>
-                        <td style="text-align: center;" id="subM_t${tIndex}">${temaM}</td>
-                        <td></td>
-                        <td style="text-align: center; color: var(--dif-orange);" id="subTot_t${tIndex}">${temaTot}</td>
-                        <td></td>
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${f.tema}</strong></td>
+                        <td>${f.subtema}</td>
+                        <td>
+                            <select class="select-concepto" onchange="actualizarConcepto(${idx}, this.value)">
+                                ${catalogoConceptos[f.tema].opciones.map(opt => `<option value="${opt}" ${opt === f.conceptoSeleccionado ? 'selected' : ''}>${opt}</option>`).join('')}
+                                <option value="PERSONALIZADO" ${!catalogoConceptos[f.tema].opciones.includes(f.conceptoSeleccionado) ? 'selected' : ''}>+ Escribir otro concepto...</option>
+                            </select>
+                            ${!catalogoConceptos[f.tema].opciones.includes(f.conceptoSeleccionado) ? `<input type="text" class="input-custom-concepto" style="margin-top:5px;" value="${f.conceptoSeleccionado}" oninput="actualizarConceptoPersonalizado(${idx}, this.value)" placeholder="Escriba el concepto...">` : ''}
+                        </td>
+                        <td><input type="number" class="input-number" min="0" value="${f.hombre}" onchange="actualizarValor(${idx}, 'hombre', this.value)"></td>
+                        <td><input type="number" class="input-number" min="0" value="${f.mujer}" onchange="actualizarValor(${idx}, 'mujer', this.value)"></td>
+                        <td><input type="text" class="input-obs" value="${f.obs}" onchange="actualizarValor(${idx}, 'obs', this.value)" placeholder="Observaciones..."></td>
+                        <td style="text-align: center; font-weight: bold; background: #fff7ed;">${totalFila}</td>
+                        <td style="text-align: center;">
+                            <button class="btn btn-sm btn-secondary-gray" title="Eliminar fila" onclick="eliminarFila(${idx})"><i class="fa-solid fa-trash"></i></button>
+                        </td>
                     `;
-                    tbody.appendChild(trSub);
+                    tbody.appendChild(tr);
+                });
 
-                    sumaGralH += temaH;
-                    sumaGralM += temaM;
-                    sumaGralTotal += temaTot;
-                } else {
-                    let trEmpty = document.createElement('tr');
-                    trEmpty.innerHTML = `
-                        <td style="background-color: #f1f5f9; font-weight: 700; color: var(--dif-gray);">${temaNombre}<br><button class="btn btn-primary btn-sm" onclick="agregarFila('${temaNombre}')"><i class="fa-solid fa-plus"></i> Agregar Concepto</button></td>
-                        <td style="background-color: #f8fafc;">${catalogoConceptos[temaNombre].subtema}</td>
-                        <td colspan="6" style="text-align: center; color: #94a3b8; font-style: italic;">Sin conceptos registrados en este tema. Haga clic en agregar.</td>
-                    `;
-                    tbody.appendChild(trEmpty);
-                }
+                let trAdd = document.createElement('tr');
+                trAdd.innerHTML = `
+                    <td colspan="8" style="padding: 6px 15px; background: #f1f5f9; text-align: left;">
+                        <button class="btn btn-sm btn-primary" onclick="agregarFila('${temaNombre}')"><i class="fa-solid fa-plus"></i> Agregar concepto en ${temaNombre}</button>
+                    </td>
+                `;
+                tbody.appendChild(trAdd);
+
+                let subtotalTema = subH + subM;
+                let trSub = document.createElement('tr');
+                trSub.className = "tema-subtotal-row";
+                trSub.innerHTML = `
+                    <td colspan="3" style="text-align: right;">SUBTOTAL ${temaNombre.toUpperCase()}:</td>
+                    <td style="text-align: center;">${subH}</td>
+                    <td style="text-align: center;">${subM}</td>
+                    <td>-</td>
+                    <td style="text-align: center; color: var(--dif-orange);">${subtotalTema}</td>
+                    <td></td>
+                `;
+                tbody.appendChild(trSub);
+
+                sumaGralH += subH;
+                sumaGralM += subM;
+                sumaGralTotal += subtotalTema;
             });
 
-            let trTotal = document.createElement('tr');
-            trTotal.className = "total-row";
-            trTotal.innerHTML = `
-                <td colspan="3" style="text-align: right;">TOTAL GENERAL INSTITUCIONAL:</td>
-                <td style="text-align: center;" id="sumH">${sumaGralH}</td>
-                <td style="text-align: center;" id="sumM">${sumaGralM}</td>
+            let trTot = document.createElement('tr');
+            trTot.className = "total-row";
+            trTot.innerHTML = `
+                <td colspan="3" style="text-align: right; font-size: 13px;">GRAN TOTAL GENERAL INSTITUCIONAL:</td>
+                <td style="text-align: center; font-size: 13px;">${sumaGralH}</td>
+                <td style="text-align: center; font-size: 13px;">${sumaGralM}</td>
                 <td></td>
-                <td style="text-align: center; color: var(--dif-orange);" id="sumTotGral">${sumaGralTotal}</td>
+                <td style="text-align: center; font-size: 13px; color: var(--dif-orange);">${sumaGralTotal}</td>
                 <td></td>
             `;
-            tbody.appendChild(trTotal);
+            tbody.appendChild(trTot);
         }
 
-        function cambiarTipoConcepto(index, valor) {
-            filasDinamicas[index]['conceptoSeleccionado'] = valor;
-            if(valor === "+ Otro servicio (Escribir concepto personalizado)") {
-                filasDinamicas[index]['esCustom'] = true;
-                filasDinamicas[index]['conceptoCustomVal'] = "";
+        function actualizarConcepto(index, valor) {
+            if (valor === "PERSONALIZADO") {
+                filasDinamicas[index].conceptoSeleccionado = "";
             } else {
-                filasDinamicas[index]['esCustom'] = false;
+                filasDinamicas[index].conceptoSeleccionado = valor;
             }
             renderizarTabla();
         }
 
-        function actualizarDato(index, campo, valor) {
-            filasDinamicas[index][campo] = valor;
-            if (campo === 'hombre' || campo === 'mujer') {
-                let f = filasDinamicas[index];
-                let rowTot = f.hombre + f.mujer;
-                let totEl = document.getElementById(`tot_${index}`);
-                if (totEl) totEl.textContent = rowTot;
-                recalcularTotalesEnDOM();
-            }
+        function actualizarConceptoPersonalizado(index, valor) {
+            filasDinamicas[index].conceptoSeleccionado = valor;
         }
 
-        function recalcularTotalesEnDOM() {
-            let temasUnicos = Object.keys(catalogoConceptos);
-            let sumaGralH = 0, sumaGralM = 0, sumaGralTotal = 0;
-
-            temasUnicos.forEach((temaNombre, tIndex) => {
-                let filasDelTema = filasDinamicas.map((f, idx) => ({f, idx})).filter(item => item.f.tema === temaNombre);
-                let temaH = 0, temaM = 0, temaTot = 0;
-
-                filasDelTema.forEach(item => {
-                    let f = item.f;
-                    temaH += f.hombre;
-                    temaM += f.mujer;
-                    temaTot += (f.hombre + f.mujer);
-                });
-
-                let subHEl = document.getElementById(`subH_t${tIndex}`);
-                let subMEl = document.getElementById(`subM_t${tIndex}`);
-                let subTotEl = document.getElementById(`subTot_t${tIndex}`);
-
-                if (subHEl) subHEl.textContent = temaH;
-                if (subMEl) subMEl.textContent = temaM;
-                if (subTotEl) subTotEl.textContent = temaTot;
-
-                sumaGralH += temaH;
-                sumaGralM += temaM;
-                sumaGralTotal += temaTot;
-            });
-
-            let sumHEl = document.getElementById('sumH');
-            let sumMEl = document.getElementById('sumM');
-            let sumTotGralEl = document.getElementById('sumTotGral');
-
-            if (sumHEl) sumHEl.textContent = sumaGralH;
-            if (sumMEl) sumMEl.textContent = sumaGralM;
-            if (sumTotGralEl) sumTotGralEl.textContent = sumaGralTotal;
+        function actualizarValor(index, campo, valor) {
+            if (campo === 'hombre' || campo === 'mujer') {
+                filasDinamicas[index][campo] = Number(valor) < 0 ? 0 : Number(valor);
+            } else {
+                filasDinamicas[index][campo] = valor;
+            }
+            renderizarTabla();
         }
 
         function limpiarFormulario() {
-            if (confirm("¿Desea vaciar todos los registros para iniciar de nuevo?")) {
+            if (confirm("¿Desea restablecer todos los registros ingresados?")) {
                 inicializarTabla();
             }
+        }
+
+        /* --- CÁLCULO DE SUBTOS POR TEMA PARA REPORTES SIN CONCEPTOS --- */
+        function calcularSubtotalesPorTema() {
+            let temasUnicos = Object.keys(catalogoConceptos);
+            let resumenTemas = {};
+
+            temasUnicos.forEach(temaNombre => {
+                let filasDelTema = filasDinamicas.filter(f => f.tema === temaNombre);
+                let subH = 0, subM = 0;
+                filasDelTema.forEach(f => {
+                    subH += Number(f.hombre);
+                    subM += Number(f.mujer);
+                });
+                resumenTemas[temaNombre] = {
+                    subtema: catalogoConceptos[temaNombre].subtema,
+                    hombre: subH,
+                    mujer: subM,
+                    total: subH + subM
+                };
+            });
+            return resumenTemas;
+        }
+
+        /* --- GUARDAR Y SUBIR REPORTE DE CENTRO --- */
+        function guardarReporteCentro() {
+            let centro = document.getElementById('selectCentro').value;
+            let mes = document.getElementById('selectMes').value;
+            let resumenTemas = calcularSubtotalesPorTema();
+
+            let reportesGuardados = JSON.parse(localStorage.getItem('gcapam_reportes_centros') || '{}');
+            let claveRepo = `${centro}_${mes}`;
+
+            reportesGuardados[claveRepo] = {
+                centro: centro,
+                mes: mes,
+                fechaGuardado: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString(),
+                resumen: resumenTemas
+            };
+
+            localStorage.setItem('gcapam_reportes_centros', JSON.stringify(reportesGuardados));
+            alert(`¡Reporte de "${centro}" (${mes}) guardado y enviado al panel directivo exitosamente!`);
+            cargarHistorialReportes();
+        }
+
+        function cargarHistorialReportes() {
+            let lista = document.getElementById('listaCentrosGuardados');
+            let reportesGuardados = JSON.parse(localStorage.getItem('gcapam_reportes_centros') || '{}');
+            let claves = Object.keys(reportesGuardados);
+
+            lista.innerHTML = "";
+            if (claves.length === 0) {
+                lista.innerHTML = '<li style="color: #94a3b8; font-style: italic;">No hay reportes institucionales guardados todavía.</li>';
+                return;
+            }
+
+            claves.forEach(clave => {
+                let rep = reportesGuardados[clave];
+                let li = document.createElement('li');
+                li.innerHTML = `
+                    <span><i class="fa-solid fa-circle-check" style="color: #10b981;"></i> <strong>${rep.centro}</strong> — <span style="color: var(--dif-orange);">${rep.mes}</span> <small>(Guardado: ${rep.fechaGuardado})</small></span>
+                    <div>
+                        <button class="btn btn-sm btn-success" onclick="descargarReporteGuardado('${clave}')"><i class="fa-solid fa-download"></i> Excel Centro</button>
+                        <button class="btn btn-sm btn-secondary-gray" onclick="eliminarReporteGuardado('${clave}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                lista.appendChild(li);
+            });
+        }
+
+        function eliminarReporteGuardado(clave) {
+            if (confirm("¿Desea eliminar este reporte guardado?")) {
+                let reportesGuardados = JSON.parse(localStorage.getItem('gcapam_reportes_centros') || '{}');
+                delete reportesGuardados[clave];
+                localStorage.setItem('gcapam_reportes_centros', JSON.stringify(reportesGuardados));
+                cargarHistorialReportes();
+            }
+        }
+
+        /* --- DESCARGAS EN EXCEL SIN CONCEPTOS (SOLO TEMAS, SUBTEMAS, SUBTOTALES Y TOTALES) --- */
+        function generarTablaHtmlSinConceptos(resumenTemas, tituloHeader) {
+            let html = `
+                <h3>${tituloHeader}</h3>
+                <table border="1">
+                    <thead>
+                        <tr style="background-color: #5a6578; color: #ffffff;">
+                            <th>Tema Principal</th>
+                            <th>Subtema</th>
+                            <th>Hombre</th>
+                            <th>Mujer</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            let totalGenH = 0, totalGenM = 0, totalGenS = 0;
+
+            Object.keys(resumenTemas).forEach(tema => {
+                let r = resumenTemas[tema];
+                totalGenH += r.hombre;
+                totalGenM += r.mujer;
+                totalGenS += r.total;
+
+                html += `
+                    <tr>
+                        <td><strong>${tema}</strong></td>
+                        <td>${r.subtema}</td>
+                        <td style="text-align: center;">${r.hombre}</td>
+                        <td style="text-align: center;">${r.mujer}</td>
+                        <td style="text-align: center; font-weight: bold; background-color: #fff7ed;">${r.total}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    <tr style="background-color: #fff7ed; font-weight: bold;">
+                        <td colspan="2" style="text-align: right;">GRAN TOTAL GENERAL:</td>
+                        <td style="text-align: center;">${totalGenH}</td>
+                        <td style="text-align: center;">${totalGenM}</td>
+                        <td style="text-align: center; color: #f37021;">${totalGenS}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            `;
+            return html;
         }
 
         function exportToExcel() {
             let centro = document.getElementById('selectCentro').value;
             let mes = document.getElementById('selectMes').value;
-            
-            // Reemplazar selectores y inputs personalizados por su texto plano para el reporte de Excel
-            let tablaClon = document.getElementById('reportTable').cloneNode(true);
-            
-            let filasClon = tablaClon.querySelectorAll('tbody tr');
-            let indexFilaData = 0;
+            let resumenTemas = calcularSubtotalesPorTema();
 
-            // Recorremos y limpiamos inputs para exportación limpia en Excel
-            filasDinamicas.forEach((f, idx) => {
-                // localizamos la fila correspondiente en la tabla clonada si no es subtotal/total
+            let contenidoTabla = generarTablaHtmlSinConceptos(resumenTemas, `REPORTE INSTITUCIONAL GCAPAM - ${centro.toUpperCase()} (${mes.toUpperCase()})`);
+            
+            let blob = new Blob([
+                '<meta charset="UTF-8">' + contenidoTabla
+            ], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+            
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Resumen_${centro.replace(/[^a-zA-Z0-9]/g, '_')}_${mes}.xls`;
+            link.click();
+        }
+
+        function descargarReporteGuardado(clave) {
+            let reportesGuardados = JSON.parse(localStorage.getItem('gcapam_reportes_centros') || '{}');
+            let rep = reportesGuardados[clave];
+            if (!rep) return;
+
+            let contenidoTabla = generarTablaHtmlSinConceptos(rep.resumen, `REPORTE INSTITUCIONAL GCAPAM - ${rep.centro.toUpperCase()} (${rep.mes.toUpperCase()})`);
+            
+            let blob = new Blob([
+                '<meta charset="UTF-8">' + contenidoTabla
+            ], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+            
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Reporte_${rep.centro.replace(/[^a-zA-Z0-9]/g, '_')}_${rep.mes}.xls`;
+            link.click();
+        }
+
+        function exportarExcelConsolidadoGeneral() {
+            let reportesGuardados = JSON.parse(localStorage.getItem('gcapam_reportes_centros') || '{}');
+            let claves = Object.keys(reportesGuardados);
+
+            if (claves.length === 0) {
+                alert("No hay reportes de centros guardados para integrar.");
+                return;
+            }
+
+            let consolidadoGlobal = {};
+            let temasUnicos = Object.keys(catalogoConceptos);
+
+            temasUnicos.forEach(tema => {
+                consolidadoGlobal[tema] = {
+                    subtema: catalogoConceptos[tema].subtema,
+                    hombre: 0,
+                    mujer: 0,
+                    total: 0
+                };
             });
 
-            let html = tablaClon.outerHTML;
-            
-            let blob = new Blob(['\ufeff' + `<html><head><meta charset="utf-8"><title>Reporte Mensual</title></head><body><h3>GCAPAM - Hoja de Registro y Control</h3><p><b>Centro:</b> ${centro} <br><b>Mes Reportado:</b> ${mes}</p>` + html + '</body></html>'], {
-                type: 'application/vnd.ms-excel'
+            claves.forEach(clave => {
+                let rep = reportesGuardados[clave];
+                Object.keys(rep.resumen).forEach(tema => {
+                    if (consolidadoGlobal[tema]) {
+                        consolidadoGlobal[tema].hombre += rep.resumen[tema].hombre;
+                        consolidadoGlobal[tema].mujer += rep.resumen[tema].mujer;
+                        consolidadoGlobal[tema].total += rep.resumen[tema].total;
+                    }
+                });
             });
+
+            let contenidoTabla = generarTablaHtmlSinConceptos(consolidadoGlobal, `CONSOLIDADO GENERAL INTEGRADO GCAPAM (TODOS LOS CENTROS)`);
+
+            let blob = new Blob([
+                '<meta charset="UTF-8">' + contenidoTabla
+            ], { type: 'application/vnd.ms-excel;charset=utf-8;' });
             
-            let url = URL.createObjectURL(blob);
-            let a = document.createElement('a');
-            a.href = url;
-            a.download = `Hoja_Registro_${centro.substring(0, 15).trim().replace(/[\s\(\)\/]+/g, '_')}_${mes}.xls`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Consolidado_General_GCAPAM.xls`;
+            link.click();
         }
     </script>
 </body>
