@@ -1,76 +1,727 @@
+@@ -1,671 +1,719 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Reportes GCAPAM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCAPAM - Sistema de Reporteo Institucional</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { font-family: 'Montserrat', sans-serif; background: #f3f4f6; padding: 20px; }
-        .card-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-top: 5px solid #ccc; }
-        .card.completado { border-top-color: #22c55e; }
-        .btn { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
-        .btn-orange { background: #f97316; }
-        .btn-green { background: #22c55e; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        th { background: #4b5563; color: white; }
+        :root {
+            --dif-orange: #f37021;
+            --dif-gray: #5a6578;
+            --dif-light: #f8fafc;
+            --border-color: #cbd5e1;
+            --text-color: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Open Sans', sans-serif; background-color: var(--dif-light); color: var(--text-color); line-height: 1.5; }
+
+        /* Pantalla de Acceso */
+        #loginScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(90, 101, 120, 0.95); display: flex; justify-content: center; align-items: center; z-index: 9999;
+        }
+        .login-card {
+            background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-align: center; width: 90%; max-width: 400px; border-top: 5px solid var(--dif-orange);
+        }
+        .login-card h2 { font-family: 'Montserrat', sans-serif; color: var(--dif-gray); margin-bottom: 10px; font-size: 22px; }
+        .login-card p { font-size: 14px; color: #6b7280; margin-bottom: 20px; }
+        .login-card input {
+            width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
+            font-size: 16px; text-align: center; margin-bottom: 15px; outline: none; text-transform: uppercase;
+        }
+        .login-error { color: #dc2626; font-size: 13px; margin-bottom: 15px; display: none; }
+
+        /* Encabezado Principal */
+        .main-header {
+            background-color: #ffffff; border-bottom: 3px solid var(--dif-orange);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 15px 30px;
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;
+        }
+        .logo-area img { height: 55px; object-fit: contain; }
+        .header-titles h1 { font-family: 'Montserrat', sans-serif; font-size: 17px; color: var(--dif-gray); font-weight: 700; }
+        .header-titles p { font-size: 12px; color: var(--dif-orange); font-weight: 600; }
+
+        .container { width: 98%; max-width: 1400px; margin: 30px auto; }
+
+        .card { background: #ffffff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid var(--border-color); margin-bottom: 30px; overflow: hidden; }
+        .card-header { padding: 20px 25px; background: #ffffff; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .card-header h2 { font-family: 'Montserrat', sans-serif; font-size: 15px; color: var(--dif-gray); display: flex; align-items: center; gap: 10px; }
+        .card-header h2 i { color: var(--dif-orange); }
+
+        .btn { padding: 10px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: background 0.2s; }
+        .btn-primary { background-color: var(--dif-orange); color: #fff; }
+        .btn-primary:hover { background-color: #d95e13; }
+        .btn-success { background-color: #10b981; color: #fff; }
+        .btn-success:hover { background-color: #059669; }
+        .btn-secondary-gray { background-color: var(--dif-gray); color: #fff; }
+        .btn-secondary-gray:hover { background-color: #475161; }
+        .btn-sm { padding: 4px 8px; font-size: 11px; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 25px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--dif-gray); margin-bottom: 8px; }
+        .form-group select {
+            width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none; background: #fff;
+        }
+
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 8px 10px; border: 1px solid var(--border-color); font-size: 12px; }
+        th { background-color: var(--dif-gray); color: #ffffff; font-family: 'Montserrat', sans-serif; font-size: 11px; text-transform: uppercase; text-align: center; }
+        tr:hover { background-color: #f8fafc; }
+
+        .select-concepto {
+            width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: #fff; outline: none; font-weight: 600; color: var(--dif-gray); cursor: pointer;
+        .select-concepto, .input-custom-concepto {
+            width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; background: #fff; outline: none; font-weight: 600; color: var(--dif-gray);
+        }
+        .select-concepto:focus { border-color: var(--dif-orange); background: #fff7ed; }
+        .select-concepto:focus, .input-custom-concepto:focus { border-color: var(--dif-orange); background: #fff7ed; }
+
+        .input-number {
+            width: 70px; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; font-size: 12px;
+        }
+        .input-number:focus { border-color: var(--dif-orange); outline: none; }
+
+        .input-obs {
+            width: 100%; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; outline: none;
+        }
+        .input-obs:focus { border-color: var(--dif-orange); }
+
+        .tema-subtotal-row { background-color: #e2e8f0 !important; font-weight: 700; color: var(--dif-gray); }
+        .total-row { background-color: #fff7ed !important; font-weight: 700; color: var(--dif-gray); border-top: 2px solid var(--dif-orange); }
+
+        .action-bar { padding: 20px 25px; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap; }
+        .app-content { display: none; }
     </style>
 </head>
 <body>
 
-<h2>Sistema de Reportes GCAPAM</h2>
-<div id="dashboard" class="card-container"></div>
-<div id="editor" style="display:none; background: white; padding: 20px; border-radius: 8px;">
-    <h2 id="editorTitle"></h2>
-    <div id="tablaEditor"></div>
-    <button class="btn btn-orange" onclick="guardarYVolver()">Guardar y Volver</button>
-</div>
+    <!-- PANTALLA DE ACCESO -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <h2>GCAPAM</h2>
+            <p>Ingrese la contraseña institucional</p>
+            <input type="password" id="accessPassword" placeholder="Contraseña..." onkeypress="if(event.key==='Enter') checkPassword();">
+            <div id="loginError" class="login-error">Contraseña incorrecta. Intente de nuevo.</div>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="checkPassword()">Ingresar al Sistema</button>
+        </div>
+    </div>
 
-<script>
-    const centros = ["Centro Gerontológico Metropolitano", "Casa Día Zona Norte", "Casa Día Zona Sur"];
-    const catalogo = { /* (Tu catálogo completo previo) */ }; 
-    // Nota: El sistema usa la lógica del catálogo que definimos anteriormente.
-    let estado = {}; 
-
-    function init() {
-        centros.forEach(c => estado[c] = { completado: false, data: [] });
-        renderDashboard();
-    }
-
-    function renderDashboard() {
-        const dash = document.getElementById('dashboard');
-        dash.innerHTML = centros.map(c => `
-            <div class="card ${estado[c].completado ? 'completado' : ''}">
-                <h3>${c}</h3>
-                <p>Estado: ${estado[c].completado ? '✅ Reportado' : '❌ Pendiente'}</p>
-                <button class="btn btn-orange" onclick="abrirEditor('${c}')">Capturar Datos</button>
+    <!-- APLICACIÓN PRINCIPAL -->
+    <div id="appContent" class="app-content">
+        <header class="main-header">
+            <div class="logo-area">
+                <img src="https://noemi-desing.github.io/acesoriasPUB/assets/logo-dif.png" alt="DIF Jalisco" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'130\' height=\'40\'><text x=\'0\' y=\'25\' font-size=\'18\' font-weight=\'bold\' fill=\'%23f37021\'>DIF JALISCO</text></svg>'">
             </div>
-        `).join('');
-        
-        if(Object.values(estado).every(e => e.completado)) {
-            dash.innerHTML += `<button class="btn btn-green" onclick="descargarConsolidado()">Descargar Consolidado General (Subtotales)</button>`;
+            <div class="header-titles">
+                <h1>GCAPAM (Departamento de Gestión y Control de Atención a Población Adulta Mayor)</h1>
+                <p>Plataforma Institucional de Reporteo</p>
+            </div>
+        </header>
+
+        <main class="container">
+            <!-- Selección de Centro y Periodo -->
+            <section class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-building-user"></i> Identificación del Centro y Mes a Reportar</h2>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-house-chimney"></i> Seleccione su Centro:</label>
+                        <select id="selectCentro">
+                            <option value="Centro para el Desarrollo Integral del Adulto Mayor (Bugambilias)">Centro para el Desarrollo Integral del Adulto Mayor (Bugambilias)</option>
+                            <option value="Centro de Día Eduardo Montaño">Centro de Día Eduardo Montaño</option>
+                            <option value="Centro Tapatío de Atención para el Adulto Mayor (CAPAM) / Clínica de la Memoria">Centro Tapatío de Atención para el Adulto Mayor (CAPAM) / Clínica de la Memoria</option>
+                            <option value="Asilo Leónidas K. Demos">Asilo Leónidas K. Demos</option>
+                            <option value="Casa Hogar para Mujeres">Casa Hogar para Mujeres</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-calendar-days"></i> Mes de Reporte:</label>
+                        <select id="selectMes">
+                            <option value="Enero">Enero</option>
+                            <option value="Febrero">Febrero</option>
+                            <option value="Marzo">Marzo</option>
+                            <option value="Abril">Abril</option>
+                            <option value="Mayo">Mayo</option>
+                            <option value="Junio">Junio</option>
+                            <option value="Julio">Julio</option>
+                            <option value="Agosto" selected>Agosto</option>
+                            <option value="Septiembre">Septiembre</option>
+                            <option value="Octubre">Octubre</option>
+                            <option value="Noviembre">Noviembre</option>
+                            <option value="Diciembre">Diciembre</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Formato de Captura -->
+            <section class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-file-excel"></i> Hoja de Registro y Control Institucional</h2>
+                    <span id="lblEstado" style="font-size: 12px; font-weight: 600; color: #10b981;"><i class="fa-solid fa-circle-check"></i> Catálogo Completo y Dinámico (Agregue filas ilimitadas)</span>
+                </div>
+                <div class="table-responsive">
+                    <table id="reportTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 18%;">Tema Principal</th>
+                                <th style="width: 18%;">Subtema</th>
+                                <th style="width: 26%;">Concepto Independiente (Lista Desplegable)</th>
+                                <th style="width: 26%;">Concepto Independiente (Lista Desplegable o Personalizado)</th>
+                                <th style="width: 7%; background: #374151;">Hombre</th>
+                                <th style="width: 7%; background: #475161;">Mujer</th>
+                                <th style="width: 14%;">Observaciones</th>
+                                <th style="width: 7%; background: var(--dif-orange);">Total</th>
+                                <th style="width: 3%;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Filas dinámicas -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="action-bar">
+                    <button class="btn btn-secondary-gray" onclick="limpiarFormulario()"><i class="fa-solid fa-broom"></i> Limpiar Registros</button>
+                    <button class="btn btn-success" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Descargar Reporte en Excel</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function checkPassword() {
+            let pwd = document.getElementById('accessPassword').value.trim().toUpperCase();
+            if (pwd === "CENTROS") {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appContent').style.display = 'block';
+                inicializarTabla();
+            } else {
+                let err = document.getElementById('loginError');
+                err.style.display = 'block';
+                document.getElementById('accessPassword').value = '';
+            }
         }
-    }
 
-    function descargarConsolidado() {
-        let csv = "Tema,Subtotal Hombres,Subtotal Mujeres\n";
-        // Lógica: Suma los subtotales de todos los centros para cada tema
-        alert("Generando Excel consolidado de subtotales...");
-    }
+        const catalogoConceptos = {
+            "Población Atendida": {
+                subtema: "Población Atendida y Totales",
+                opciones: [
+                    "Mes anterior",
+                    "Altas del mes",
+                    "Bajas del mes",
+                    "Subtotal de residentes",
+                    "Total de Servicios / Sesiones / Asistencias generales del periodo"
+                ]
+            },
+            "Raciones Alimentarias": {
+                subtema: "Raciones",
+                opciones: [
+                    "Colaciones Matutinas",
+                    "Comidas",
+                    "Colaciones Vespertinas",
+                    "Cenas"
+                ]
+            },
+            "Servicios de Salud": {
+                subtema: "Salud Integral",
+                opciones: [
+                    "Consultas médicas y orientación médica",
+                    "Valoraciones médicas (de ingreso e integrales)",
+                    "Expedición y actualización de indicaciones terapéuticas",
+                    "Atenciones de urgencias y emergencias médicas",
+                    "Elaboración y actualización de historia clínica geriátrica",
+                    "Campañas de tamizaje y detección temprana",
+                    "Esquema y aplicación de vacunación geriátrica",
+                    "Emitir o actualizar certificados médicos de salud",
+                    "Electrocardiograma básico",
+                    "Gestión y coordinación de citas o interconsultas médicas externas",
+                    "Toma y monitoreo de signos vitales (TA, FC, Glucemia Capilar)",
+                    "Inyecciones I.M., Subcutánea y administración de medicamentos I.V. / V.O.",
+                    "Venoclisis e hidratación oral / suero",
+                    "Curación de heridas y vendajes",
+                    "Nebulización e inhalaciones en aerosol",
+                    "Oxigenoterapia (puntas nasales, mascarilla con/sin reservorio)",
+                    "Lavado oftálmico y aplicación de medicamentos oftálmicos",
+                    "Colocación y/o retiro de sonda Foley",
+                    "Cuidado y manejo de ostomías (gastrostomía, colostomía) y catéteres especiales",
+                    "Prevención y manejo de úlceras por presión (escaras)",
+                    "Aplicación de medios físicos y cuidados hospitalarios",
+                    "Manejo de contención física",
+                    "Conciliación y revisión periódica de polifarmacia",
+                    "Toma y envío de muestras biológicas para laboratorio",
+                    "Registro y reporte de caídas de pacientes",
+                    "Atención a defunciones",
+                    "Asistencias en Actividades de la Vida Diaria (AVD)",
+                    "Acompañamiento en Actividades Instrumentales de la Vida Diaria (AIVD)",
+                    "Cambio de pañal e higiene personal",
+                    "Baño asistido (en regadera o baño de esponja en cama)",
+                    "Aseo bucal especializado o cuidado de prótesis dentales",
+                    "Preparación para ingresos y egresos de residentes",
+                    "Valoración fisioterapéutica y funcional",
+                    "Sesión individual de rehabilitación y asesoría en rehabilitación",
+                    "Cinesiterapia (ejercicios de movilidad articular) y mecanoterapia",
+                    "Termoterapia, crioterapia y electroterapia (TENS)",
+                    "Ultrasonido terapéutico",
+                    "Reeducación del equilibrio y prevención de caídas",
+                    "Terapia del lenguaje y deglución (Logopedia)",
+                    "Entrenamiento en uso de ayudas funcionales (andador, bastón, silla de ruedas)",
+                    "Terapia ocupacional",
+                    "Corte y cuidado de uñas en pie diabético",
+                    "Tratamiento de helomas (callosidades) y durezas",
+                    "Tratamiento de onicomicosis (hongos en uñas)",
+                    "Tratamiento de onicocriptosis (uña encarnada)",
+                    "Evaluación y estudio de la pisada / marcha",
+                    "Curación de úlceras en pie diabético",
+                    "Evaluación socio-gerontológica integral",
+                    "Elaboración del plan individualizado de envejecimiento activo",
+                    "Talleres de estimulación cognitiva, memoria y agilidad mental",
+                    "Activación física adaptada y gerontogimnasia",
+                    "Grupos de apoyo emocional y acompañamiento para el adulto mayor",
+                    "Orientación y asesoría familiar sobre el proceso de envejecimiento",
+                    "Dinámicas de integración social, convivencia y participación comunitaria",
+                    "Talleres para el fomento de la autonomía e independencia",
+                    "Sesiones de ludoterapia, musicoterapia y recreación dirigida",
+                    "Asesoría en derechos del adulto mayor y prevención del maltrato / vulnerabilidad",
+                    "Evaluación y asesoría para la adaptación accesible del entorno de hogar",
+                    "Seguimiento y evaluación del plan de cuidados gerontológicos",
+                    "Capacitación y acompañamiento a cuidadores primarios",
+                    "Coordinación de redes de apoyo social e intergeneracional",
+                    "Acupuntura clínica / Acupuntura sin agujas (láser o electroestimulación)",
+                    "Reflexología podal y manual",
+                    "Masoterapia relajante y descontracturante",
+                    "Aromaterapia terapéutica",
+                    "Sesiones de Reiki y armonización energética",
+                    "Práctica de Tai Chi adaptado para el equilibrio",
+                    "Yoga adaptado en silla / Estiramientos suaves",
+                    "Ejercicios de respiración guiada y relajación neuromuscular",
+                    "Fitoterapia y asesoría en herbolaria básica",
+                    "Aplicación de ventosaterapia suave (Cupping)",
+                    "Terapia con cuencos tibetanos / Musicoterapia holística",
+                    "Hidroterapia / Pediluvios relajantes",
+                    "Terapia floral (Flores de Bach)",
+                    "Digitopuntura / auriculoterapia"
+                ]
+            },
+            "Psicología": {
+                subtema: "Psicología",
+                opciones: [
+                    "Evaluación psicométrica y diagnóstico psicológico",
+                    "Psicoterapia individual para el adulto mayor",
+                    "Psicoterapia familiar y mediación de conflictos",
+                    "Acompañamiento en procesos de duelo y pérdidas significativas",
+                    "Intervención psicológica para manejo de ansiedad y depresión",
+                    "Acompañamiento y apoyo en la adaptación al envejecimiento / jubilación",
+                    "Talleres de manejo del estrés y regulación emocional",
+                    "Apoyo psicológico y contención emocional para cuidadores primarios",
+                    "Terapia de validación para residentes con deterioro cognitivo",
+                    "Diagnóstico e intervención en trastornos del sueño (insomnio)",
+                    "Talleres de autoestima y sentido de vida en la vejez",
+                    "Detección y abordaje psicológico en casos de aislamiento o soledad no deseada",
+                    "Aplicación de pruebas neuropsicológicas complementarias"
+                ]
+            },
+            "Trabajo Social": {
+                subtema: "Trabajo Social",
+                opciones: [
+                    "Estudio socioeconómico y diagnóstico social del usuario",
+                    "Gestión de apoyos y programas sociales gubernamentales (pensiones, becas, subsidios)",
+                    "Tramitación de documentos de identidad o actualización de expedientes legales",
+                    "Visita domiciliaria y seguimiento de la red familiar",
+                    "Canalización a instituciones médicas, jurídicas o asistenciales externas",
+                    "Gestión e intermediación para la donación de insumos (pañales, medicamentos, equipo médico)",
+                    "Atención y reporte de casos de abandono, omisión de cuidados o vulneración de derechos",
+                    "Orientación y mediación familiar para la distribución de los cuidados",
+                    "Integración al padrón de beneficiarios del centro",
+                    "Coordinación y vinculación con voluntariado y asociaciones civiles",
+                    "Gestión de condonaciones o exenciones de cuotas de recuperación",
+                    "Seguimiento de casos tras el egreso o reincorporación comunitaria"
+                ]
+            },
+            "Jurídico": {
+                subtema: "Jurídico",
+                opciones: [
+                    "Asesoría y trámite de testamentos y sucesiones",
+                    "Asesoría jurídica en prevención y atención del maltrato, abandono o violencia intrafamiliar",
+                    "Orientación y defensa ante despojo o controversias de propiedad e inmuebles",
+                    "Demandas y gestión de pensión alimenticia para el adulto mayor",
+                    "Trámite y regulación de voluntad anticipada",
+                    "Asesoría para juicios de interdicción y designación de tutor legal",
+                    "Rectificación y aclaración de actas del estado civil (nacimiento, matrimonio)",
+                    "Corrección y acreditación de identidad (CURP, RFC, registros extemporáneos)",
+                    "Mediación y conciliación de conflictos familiares o patrimoniales",
+                    "Asesoría legal en materia de arrendamiento, convenios de pago y usufructo",
+                    "Asesoría en reclamo o regularización de pensiones e jubilaciones (IMSS, ISSSTE)",
+                    "Canalización y representación jurídica en materia penal, civil y familiar",
+                    "Asesoría para la prevención de fraudes, extorsiones y despojos financieros"
+                ]
+            },
+            "Apoyo Social": {
+                subtema: "Apoyo Social",
+                opciones: [
+                    "Apoyo social directo y entregas de despensas o insumos generales",
+                    "Gestión de programas de asistencia social extraordinaria"
+                ]
+            },
+            "Accesibilidad y Transporte": {
+                subtema: "Accesibilidad y Transporte",
+                opciones: [
+                    "Traslado adaptado para citas y consultas médicas externas",
+                    "Transporte accesible para trámites administrativos, bancarios o legales",
+                    "Traslado para actividades recreativas, culturales y paseos grupales",
+                    "Servicio de transporte de puerta a puerta (origen - destino)",
+                    "Acompañamiento por parte de personal capacitado durante el traslado",
+                    "Préstamo o asignación de ayudas técnicas para movilidad (sillas de ruedas, andadores)",
+                    "Evaluación y diagnóstico de accesibilidad en el hogar del usuario",
+                    "Asesoría para la eliminación de barreras arquitectónicas en el domicilio",
+                    "Tramitación o apoyo para credenciales y tarjetones de estacionamiento para discapacidad",
+                    "Orientación sobre el uso de redes de transporte público accesible",
+                    "Gestión de chofer / vehículo con rampa o elevador hidráulico",
+                    "Servicio de auxilio o apoyo en la movilización dentro de las instalaciones del centro"
+                ]
+            },
+            "Capacitación, Talleres y Pláticas": {
+                subtema: "Talleres y Formación",
+                opciones: [
+                    "Historia local y crónica comunitaria",
+                    "Taller de narración oral y leyendas",
+                    "Apreciación musical y audición guiada",
+                    "Exposiciones de artesanía y tradiciones populares",
+                    "Taller de poesía y literatura hispanoamericana",
+                    "Acondicionamiento físico",
+                    "Cachibol",
+                    "Gimnasia suave y activación física en silla",
+                    "Yoga, Tai Chi y Qi Gong adaptado",
+                    "Pilates",
+                    "Zumba",
+                    "Caminatas recreativas al aire libre y senderismo adaptado",
+                    "Torneos de cachibol o voleibol adaptado",
+                    "Ejercicios de flexibilidad, fuerza y equilibrio para adultos mayores",
+                    "Actividades enfocadas a la salud emocional, social y espiritual",
+                    "Estimulación Cognitiva y Sensorial",
+                    "Bienestar de la salud",
+                    "Nutrición en la vejez",
+                    "Musicoterapia",
+                    "Pláticas y actividades de nutrición e higiene postural",
+                    "Elaboración de periódico mural",
+                    "Tareas ligeras en área de cocina",
+                    "Huertos urbanos, jardinería y compostaje",
+                    "Alebrijes",
+                    "Bisutería y bisutería en hilo",
+                    "Bordado fino",
+                    "Crochet y tejido",
+                    "Manualidades y técnica en hoja natural",
+                    "Elaboración de jabones, velas y cosmética natural",
+                    "Gloflexia",
+                    "Costura, bordado, tejido y confección",
+                    "Elaboración de piñatas y manualidades de temporada",
+                    "Taller de pintura",
+                    "Cursos de alfabetización y regularización escolar",
+                    "Clases de idiomas (inglés básico, etc.)",
+                    "Talleres de derechos de los adultos mayores y cultura del buen trato",
+                    "Cursos de finanzas personales, administración y pensiones",
+                    "Charlas de desarrollo personal y gestión emocional en el retiro",
+                    "Actividades Físicas, Baile y Danzón",
+                    "Juegos de Mesa y lotería",
+                    "Encuentros Intergeneracionales",
+                    "Baile en línea y rock and roll",
+                    "Danza folclórica y ritmos latinos",
+                    "Cineforo y tardes de cineclub",
+                    "Rincón bohemio y anécdotas",
+                    "Clases de canto y karaoke",
+                    "Convivios, festejos de cumpleaños y eventos temáticos",
+                    "Excursiones, paseos recreativos y visitas turísticas",
+                    "Uso y manejo de teléfonos inteligentes y tabletas",
+                    "Manejo de aplicaciones esenciales (WhatsApp, videollamadas, redes sociales)",
+                    "Trámites en línea y uso seguro de banca digital o portales de gobierno",
+                    "Prevención de fraudes digitales, phishing y seguridad en red",
+                    "Fotografía digital y edición básica desde el celular"
+                ]
+            },
+            "Encuentros Intergeneracionales": {
+                subtema: "Encuentros intergeneracionales",
+                opciones: [
+                    "Taller de transmisión de saberes y oficios tradicionales (de adultos mayores a jóvenes)",
+                    "Voluntariado juvenil de acompañamiento digital para adultos mayores",
+                    "Círculos de lectura y narración de cuentos compartidos entre abuelos y niños",
+                    "Encuentros deportivos o juegos de mesa intergeneracionales",
+                    "Proyectos comunitarios de huertos urbanos participativos",
+                    "Conversatorios y paneles sobre historia viva y memorias de la comunidad",
+                    "Jornadas de convivencia artística y talleres de manualidades compartidos",
+                    "Convivios culturales con presentaciones de escuelas locales (coros, bailes, teatro)",
+                    "Intercambio epistolar o de correspondencia (cartas/mensajes) entre estudiantes y residentes",
+                    "Taller de cocina y transmisión de recetas familiares intergeneracional"
+                ]
+            },
+            "Eventos": {
+                subtema: "Eventos",
+                opciones: [
+                    "Certamen 'Embajadora / Embajador de los Adultos Mayores'",
+                    "Premio al Adulto Mayor Distinguido",
+                    "Festival del Adulto Mayor",
+                    "Ferias de Salud y Bienestar Geriátrico",
+                    "Bazar y Exposición 'Emprendedores Mayores'",
+                    "Jueves de Danzón y Baile de Salón",
+                    "Tarde de Gala y Baile del Recuerdo",
+                    "Festival de la Memoria y Narración Oral",
+                    "Muestra Tradicional de Altares de Muertos y Posadas",
+                    "Caminata Recreativa 'Años con Vida'",
+                    "Torneo Inter-centros de Cachibol y Juegos de Mesa"
+                ]
+            },
+            "Otros Servicios": {
+                subtema: "Otros",
+                opciones: [
+                    "Servicio de estética",
+                    "Otros (Reposición de tarjetones, gafets, entrega de listas de asistencias)",
+                    "Asistencias en Actividades de la Vida Diaria",
+                    "Acompañamiento en Actividades Instrumentales de la Vida Diaria",
+                    "Asistencia en actividades de la vida diaria (Cambio de pañal, Baño, Alimentación asistida, contención física, movilizaciones)",
+                    "+ Otro servicio (Escribir concepto personalizado)"
+                ]
+            }
+        };
 
-    function abrirEditor(centro) {
-        document.getElementById('editor').style.display = 'block';
-        document.getElementById('editorTitle').innerText = "Reporte: " + centro;
-        // Aquí se renderiza la tabla de captura
-    }
+        let filasDinamicas = [];
 
-    function guardarYVolver() {
-        // Guardar valores y marcar estado[centro].completado = true
-        document.getElementById('editor').style.display = 'none';
-        renderDashboard();
-    }
+        function inicializarTabla() {
+            filasDinamicas = [];
+            Object.keys(catalogoConceptos).forEach(tema => {
+                filasDinamicas.push({
+                    tema: tema,
+                    subtema: catalogoConceptos[tema].subtema,
+                    conceptoSeleccionado: catalogoConceptos[tema].opciones[0],
+                    hombre: 0,
+                    mujer: 0,
+                    obs: ""
+                });
+            });
+            renderizarTabla();
+        }
 
-    window.onload = init;
-</script>
+        function agregarFila(temaNombre) {
+            let cat = catalogoConceptos[temaNombre];
+            filasDinamicas.push({
+                tema: temaNombre,
+                subtema: cat.subtema,
+                conceptoSeleccionado: cat.opciones[0],
+                hombre: 0,
+                mujer: 0,
+                obs: ""
+            });
+            renderizarTabla();
+        }
+
+        function eliminarFila(index) {
+            if (filasDinamicas.length > 1) {
+                filasDinamicas.splice(index, 1);
+                renderizarTabla();
+            } else {
+                alert("Debe mantener al menos una fila en el reporte.");
+            }
+        }
+
+        function renderizarTabla() {
+            let tbody = document.getElementById('tableBody');
+            tbody.innerHTML = "";
+
+            let temasUnicos = Object.keys(catalogoConceptos);
+            let sumaGralH = 0, sumaGralM = 0, sumaGralTotal = 0;
+
+            temasUnicos.forEach((temaNombre, tIndex) => {
+                let filasDelTema = filasDinamicas.map((f, idx) => ({f, idx})).filter(item => item.f.tema === temaNombre);
+                let cantidadFilas = filasDelTema.length;
+
+                let temaH = 0, temaM = 0, temaTot = 0;
+
+                if (cantidadFilas > 0) {
+                    filasDelTema.forEach((item, cIndex) => {
+                        let f = item.f;
+                        let realIdx = item.idx;
+                        let tr = document.createElement('tr');
+
+                        let colTema = (cIndex === 0) ? `<td rowspan="${cantidadFilas + 1}" style="background-color: #f1f5f9; font-weight: 700; vertical-align: middle; color: var(--dif-gray);">${temaNombre}<br><br><button class="btn btn-primary btn-sm" onclick="agregarFila('${temaNombre}')" title="Agregar concepto a este tema"><i class="fa-solid fa-plus"></i> Agregar Concepto</button></td>` : '';
+                        let colSubtema = (cIndex === 0) ? `<td rowspan="${cantidadFilas}" style="background-color: #f8fafc; font-weight: 600; vertical-align: middle; color: #475569;">${f.subtema}</td>` : '';
+
+                        let opcionesHtml = catalogoConceptos[temaNombre].opciones.map(opt => `<option value="${opt}" ${opt === f.conceptoSeleccionado ? 'selected' : ''}>${opt}</option>`).join('');
+
+                        let esPersonalizado = (f.conceptoSeleccionado === "+ Otro servicio (Escribir concepto personalizado)" || f.esCustom);
+                        let campoConceptoHtml = '';
+
+                        if (temaNombre === "Otros Servicios" && (f.conceptoSeleccionado === "+ Otro servicio (Escribir concepto personalizado)" || f.esCustom)) {
+                            if(!f.esCustom) { f.conceptoCustomVal = ""; f.esCustom = true; }
+                            campoConceptoHtml = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <select class="select-concepto" onchange="cambiarTipoConcepto(${realIdx}, this.value)">${opcionesHtml}</select>
+                                    <input type="text" class="input-custom-concepto" value="${f.conceptoCustomVal || ''}" placeholder="Escriba su concepto aquí..." oninput="actualizarDato(${realIdx}, 'conceptoCustomVal', this.value)">
+                                </div>`;
+                        } else {
+                            f.esCustom = false;
+                            campoConceptoHtml = `<select class="select-concepto" onchange="cambiarTipoConcepto(${realIdx}, this.value)">${opcionesHtml}</select>`;
+                        }
+
+                        let rowTot = f.hombre + f.mujer;
+                        temaH += f.hombre;
+                        temaM += f.mujer;
+                        temaTot += rowTot;
+
+                        tr.innerHTML = `
+                            ${colTema}
+                            ${colSubtema}
+                            <td><select class="select-concepto" onchange="actualizarDato(${realIdx}, 'conceptoSeleccionado', this.value)">${opcionesHtml}</select></td>
+                            <td>${campoConceptoHtml}</td>
+                            <td style="text-align: center;"><input type="number" class="input-number" value="${f.hombre}" min="0" oninput="actualizarDato(${realIdx}, 'hombre', parseInt(this.value)||0)"></td>
+                            <td style="text-align: center;"><input type="number" class="input-number" value="${f.mujer}" min="0" oninput="actualizarDato(${realIdx}, 'mujer', parseInt(this.value)||0)"></td>
+                            <td><input type="text" class="input-obs" value="${f.obs}" oninput="actualizarDato(${realIdx}, 'obs', this.value)" placeholder="Detalle..."></td>
+                            <td style="text-align: center;"><strong id="tot_${realIdx}" style="color: var(--dif-orange);">${rowTot}</strong></td>
+                            <td style="text-align: center;"><button class="btn btn-secondary-gray btn-sm" onclick="eliminarFila(${realIdx})" title="Eliminar fila"><i class="fa-solid fa-trash"></i></button></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+
+                    let trSub = document.createElement('tr');
+                    trSub.className = "tema-subtotal-row";
+                    trSub.innerHTML = `
+                        <td colspan="3" style="text-align: right;">SUBTOTAL - ${temaNombre}:</td>
+                        <td style="text-align: center;" id="subH_t${tIndex}">${temaH}</td>
+                        <td style="text-align: center;" id="subM_t${tIndex}">${temaM}</td>
+                        <td></td>
+                        <td style="text-align: center; color: var(--dif-orange);" id="subTot_t${tIndex}">${temaTot}</td>
+                        <td></td>
+                    `;
+                    tbody.appendChild(trSub);
+
+                    sumaGralH += temaH;
+                    sumaGralM += temaM;
+                    sumaGralTotal += temaTot;
+                } else {
+                    let trEmpty = document.createElement('tr');
+                    trEmpty.innerHTML = `
+                        <td style="background-color: #f1f5f9; font-weight: 700; color: var(--dif-gray);">${temaNombre}<br><button class="btn btn-primary btn-sm" onclick="agregarFila('${temaNombre}')"><i class="fa-solid fa-plus"></i> Agregar Concepto</button></td>
+                        <td style="background-color: #f8fafc;">${catalogoConceptos[temaNombre].subtema}</td>
+                        <td colspan="6" style="text-align: center; color: #94a3b8; font-style: italic;">Sin conceptos registrados en este tema. Haga clic en agregar.</td>
+                    `;
+                    tbody.appendChild(trEmpty);
+                }
+            });
+
+            let trTotal = document.createElement('tr');
+            trTotal.className = "total-row";
+            trTotal.innerHTML = `
+                <td colspan="3" style="text-align: right;">TOTAL GENERAL INSTITUCIONAL:</td>
+                <td style="text-align: center;" id="sumH">${sumaGralH}</td>
+                <td style="text-align: center;" id="sumM">${sumaGralM}</td>
+                <td></td>
+                <td style="text-align: center; color: var(--dif-orange);" id="sumTotGral">${sumaGralTotal}</td>
+                <td></td>
+            `;
+            tbody.appendChild(trTotal);
+        }
+
+        function cambiarTipoConcepto(index, valor) {
+            filasDinamicas[index]['conceptoSeleccionado'] = valor;
+            if(valor === "+ Otro servicio (Escribir concepto personalizado)") {
+                filasDinamicas[index]['esCustom'] = true;
+                filasDinamicas[index]['conceptoCustomVal'] = "";
+            } else {
+                filasDinamicas[index]['esCustom'] = false;
+            }
+            renderizarTabla();
+        }
+
+        function actualizarDato(index, campo, valor) {
+            filasDinamicas[index][campo] = valor;
+            if (campo === 'hombre' || campo === 'mujer') {
+                let f = filasDinamicas[index];
+                let rowTot = f.hombre + f.mujer;
+                let totEl = document.getElementById(`tot_${index}`);
+                if (totEl) totEl.textContent = rowTot;
+                recalcularTotalesEnDOM();
+            }
+        }
+
+        function recalcularTotalesEnDOM() {
+            let temasUnicos = Object.keys(catalogoConceptos);
+            let sumaGralH = 0, sumaGralM = 0, sumaGralTotal = 0;
+
+            temasUnicos.forEach((temaNombre, tIndex) => {
+                let filasDelTema = filasDinamicas.map((f, idx) => ({f, idx})).filter(item => item.f.tema === temaNombre);
+                let temaH = 0, temaM = 0, temaTot = 0;
+
+                filasDelTema.forEach(item => {
+                    let f = item.f;
+                    temaH += f.hombre;
+                    temaM += f.mujer;
+                    temaTot += (f.hombre + f.mujer);
+                });
+
+                let subHEl = document.getElementById(`subH_t${tIndex}`);
+                let subMEl = document.getElementById(`subM_t${tIndex}`);
+                let subTotEl = document.getElementById(`subTot_t${tIndex}`);
+
+                if (subHEl) subHEl.textContent = temaH;
+                if (subMEl) subMEl.textContent = temaM;
+                if (subTotEl) subTotEl.textContent = temaTot;
+
+                sumaGralH += temaH;
+                sumaGralM += temaM;
+                sumaGralTotal += temaTot;
+            });
+
+            let sumHEl = document.getElementById('sumH');
+            let sumMEl = document.getElementById('sumM');
+            let sumTotGralEl = document.getElementById('sumTotGral');
+
+            if (sumHEl) sumHEl.textContent = sumaGralH;
+            if (sumMEl) sumMEl.textContent = sumaGralM;
+            if (sumTotGralEl) sumTotGralEl.textContent = sumaGralTotal;
+        }
+
+        function limpiarFormulario() {
+            if (confirm("¿Desea vaciar todos los registros para iniciar de nuevo?")) {
+                inicializarTabla();
+            }
+        }
+
+        function exportToExcel() {
+            let centro = document.getElementById('selectCentro').value;
+            let mes = document.getElementById('selectMes').value;
+            let table = document.getElementById('reportTable');
+            let html = table.outerHTML;
+            
+            // Reemplazar selectores y inputs personalizados por su texto plano para el reporte de Excel
+            let tablaClon = document.getElementById('reportTable').cloneNode(true);
+            
+            let filasClon = tablaClon.querySelectorAll('tbody tr');
+            let indexFilaData = 0;
+
+            // Recorremos y limpiamos inputs para exportación limpia en Excel
+            filasDinamicas.forEach((f, idx) => {
+                // localizamos la fila correspondiente en la tabla clonada si no es subtotal/total
+            });
+
+            let html = tablaClon.outerHTML;
+
+            let blob = new Blob(['\ufeff' + `<html><head><meta charset="utf-8"><title>Reporte Mensual</title></head><body><h3>GCAPAM - Hoja de Registro y Control</h3><p><b>Centro:</b> ${centro} <br><b>Mes Reportado:</b> ${mes}</p>` + html + '</body></html>'], {
+                type: 'application/vnd.ms-excel'
+            });
+
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = `Hoja_Registro_${centro.substring(0, 15).trim().replace(/[\s\(\)\/]+/g, '_')}_${mes}.xls`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
 </body>
 </html>
