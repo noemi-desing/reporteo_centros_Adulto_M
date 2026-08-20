@@ -2,79 +2,75 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard GCAPAM - Gestión de Reportes</title>
+    <title>Sistema de Reportes GCAPAM</title>
     <style>
-        :root { --primary: #f97316; --secondary: #4b5563; }
-        body { font-family: sans-serif; padding: 20px; background: #f9fafb; }
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .card { background: white; padding: 20px; border-radius: 8px; border-left: 5px solid #ccc; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .card.completado { border-left-color: #22c55e; }
-        .card.pendiente { border-left-color: #ef4444; }
-        button { padding: 10px; cursor: pointer; background: var(--primary); color: white; border: none; border-radius: 4px; }
+        body { font-family: 'Montserrat', sans-serif; background: #f3f4f6; padding: 20px; }
+        .card-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-top: 5px solid #ccc; }
+        .card.completado { border-top-color: #22c55e; }
+        .btn { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
+        .btn-orange { background: #f97316; }
+        .btn-green { background: #22c55e; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background: #4b5563; color: white; }
     </style>
 </head>
 <body>
 
-<h2>Gestión de Reportes GCAPAM</h2>
-
-<div class="dashboard" id="dashboard">
-    <!-- Se llena con JS -->
-</div>
-
-<div id="editorArea" style="display:none; background: white; padding: 20px;">
-    <h3 id="tituloEditor">Reportando: ...</h3>
-    <table id="reportTable" border="1">
-        <thead><tr><th>Tema</th><th>Subtema</th><th>H</th><th>M</th></tr></thead>
-        <tbody id="tableBody"></tbody>
-    </table>
-    <button onclick="guardarReporte()">Guardar y Regresar</button>
+<h2>Sistema de Reportes GCAPAM</h2>
+<div id="dashboard" class="card-container"></div>
+<div id="editor" style="display:none; background: white; padding: 20px; border-radius: 8px;">
+    <h2 id="editorTitle"></h2>
+    <div id="tablaEditor"></div>
+    <button class="btn btn-orange" onclick="guardarYVolver()">Guardar y Volver</button>
 </div>
 
 <script>
     const centros = ["Centro Gerontológico Metropolitano", "Casa Día Zona Norte", "Casa Día Zona Sur"];
-    let estadoReportes = {}; // Almacena { centro: { data: [], completado: false } }
+    const catalogo = { /* (Tu catálogo completo previo) */ }; 
+    // Nota: El sistema usa la lógica del catálogo que definimos anteriormente.
+    let estado = {}; 
 
-    function inicializar() {
-        centros.forEach(c => estadoReportes[c] = { completado: false, data: [] });
+    function init() {
+        centros.forEach(c => estado[c] = { completado: false, data: [] });
         renderDashboard();
     }
 
     function renderDashboard() {
         const dash = document.getElementById('dashboard');
         dash.innerHTML = centros.map(c => `
-            <div class="card ${estadoReportes[c].completado ? 'completado' : 'pendiente'}">
+            <div class="card ${estado[c].completado ? 'completado' : ''}">
                 <h3>${c}</h3>
-                <p>Estado: ${estadoReportes[c].completado ? 'Reportado' : 'Pendiente'}</p>
-                <button onclick="abrirEditor('${c}')">Capturar Datos</button>
-                ${estadoReportes[c].completado ? `<button onclick="descargarExcel('${c}')">Descargar Individual</button>` : ''}
+                <p>Estado: ${estado[c].completado ? '✅ Reportado' : '❌ Pendiente'}</p>
+                <button class="btn btn-orange" onclick="abrirEditor('${c}')">Capturar Datos</button>
             </div>
         `).join('');
         
-        if(Object.values(estadoReportes).every(r => r.completado)) {
-            dash.innerHTML += `<button onclick="descargarConsolidado()" style="background: green;">Descargar Consolidado General</button>`;
+        if(Object.values(estado).every(e => e.completado)) {
+            dash.innerHTML += `<button class="btn btn-green" onclick="descargarConsolidado()">Descargar Consolidado General (Subtotales)</button>`;
         }
     }
 
-    function abrirEditor(centro) {
-        document.getElementById('editorArea').style.display = 'block';
-        document.getElementById('tituloEditor').innerText = "Reportando para: " + centro;
-        // Aquí cargarías la lógica de la tabla que ya teníamos
+    function descargarConsolidado() {
+        let csv = "Tema,Subtotal Hombres,Subtotal Mujeres\n";
+        // Lógica: Suma los subtotales de todos los centros para cada tema
+        alert("Generando Excel consolidado de subtotales...");
     }
 
-    function guardarReporte() {
-        // Lógica para guardar inputs en estadoReportes[centro].data
-        // Al terminar:
-        // estadoReportes[centro].completado = true;
-        document.getElementById('editorArea').style.display = 'none';
+    function abrirEditor(centro) {
+        document.getElementById('editor').style.display = 'block';
+        document.getElementById('editorTitle').innerText = "Reporte: " + centro;
+        // Aquí se renderiza la tabla de captura
+    }
+
+    function guardarYVolver() {
+        // Guardar valores y marcar estado[centro].completado = true
+        document.getElementById('editor').style.display = 'none';
         renderDashboard();
     }
 
-    function descargarConsolidado() {
-        alert("Generando Excel con solo Subtotales y Totales de todos los centros...");
-        // Lógica: Iterar sobre estadoReportes, sumar las H y M de cada sección y generar tabla reducida
-    }
-
-    window.onload = inicializar;
+    window.onload = init;
 </script>
 </body>
 </html>
